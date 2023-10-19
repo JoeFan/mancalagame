@@ -31,14 +31,17 @@ public class MancalaEndpoint {
 
     private String player;
 
+    private String gameId;
+
     private static MancalaGameRepository gameRepository;
 
     @Autowired
-    public void setGameRepository(MancalaGameRepository mancalaGameRepository) {
-        this.gameRepository = mancalaGameRepository;
+    public static void setGameRepository(MancalaGameRepository mancalaGameRepository) {
+        gameRepository = mancalaGameRepository;
     }
 
-    private static final Map<String, MancalaEndpoint> WEB_SOCKET_CHESS_GAMER = new HashMap();
+    private static final Map<String, MancalaEndpoint> WEB_SOCKET_CHESS_GAMER = new HashMap<>();
+    private static final Map<String, List<MancalaEndpoint>> GAME_PLAYERS_ENDPOINT = new HashMap<>();
     private static final int LENGTH = 2;
 
 
@@ -55,77 +58,95 @@ public class MancalaEndpoint {
             sendMessage(this, "user name " + username + " is already exist! please rename a new one!");
         }
         WEB_SOCKET_CHESS_GAMER.put(player, this);
-        sendGameMessageOnCoonectionOpen(username);
-    }
-
-    private static void sendGameMessageOnCoonectionOpen(String username) {
-        GameMessage gameMessage = new GameMessage();
-        gameMessage.setStatus(MessageStatus.READY);
-        gameMessage.setMessage(username);
-        sendChatMessage(gameMessage);
+        sendChatMessage(buildGameMessageWithStatus(username, MessageStatus.READY), GAME_PLAYERS_ENDPOINT.get(gameId));
     }
 
 
     @OnMessage
     public void onMessage(String message) throws IOException {
         log.info("message==>{}", message);
-        GameRequestMessage rep = mapper.readValue(message, GameRequestMessage.class);
-        log.info("resultObject===>{}", rep.toString());
-        //  int status = rep.getStatus();
-        PlayerAction playerAction = rep.getPlayerAction();
+        GameRequestMessage gameRequestMessage = mapper.readValue(message, GameRequestMessage.class);
+        log.info("resultObject===>{}", gameRequestMessage.toString());
 
+        PlayerAction playerAction = gameRequestMessage.getPlayerAction();
         if (playerAction == PlayerAction.START) {
-            GameMessage gameMessage = new GameMessage();
-            gameMessage.setStatus(MessageStatus.READY);
-            gameMessage.setMessage(this.player + " is ready......");
-
-            if (isPrepareAll()) {
-                synchronized (WEB_SOCKET_CHESS_GAMER) {
-                    Object[] players = WEB_SOCKET_CHESS_GAMER.keySet().toArray();
-                    MancalaGame mancalaGame = new MancalaGame(players[0].toString(), players[1].toString());
-                    gameRepository.save(mancalaGame);
-                    MancalaGameVO mancalaGameVO = new MancalaGameVO(mancalaGame);
-                    gameMessage.setData(mancalaGameVO);
-
-                    gameMessage.setStatus(MessageStatus.START);
-                    gameMessage.setMessage("Game started! It's " + mancalaGame.getActiveBoardSegment().getPlayer() + "'s turn!");
-                }
-            }
-            sendChatMessage(gameMessage);
+            initializeGame();
         } else if (playerAction == PlayerAction.SOW) {
-            try {
-                String gameId = rep.getGameId();
-
-                Optional<MancalaGame> optionalMancalaGame = gameRepository.findById(gameId);
-                if (optionalMancalaGame.isPresent()) {
-                    MancalaGame mancalaGame = optionalMancalaGame.get();
-                    int pitIdx = rep.getPitIdx();
-                    SowRequest sowRequest = new SowRequest(player, pitIdx);
-                    mancalaGame.sow(sowRequest);
-
-                    MancalaGameVO mancalaGameVO = new MancalaGameVO(mancalaGame);
-                    maintainGamePersistence(mancalaGame, mancalaGameVO);
-                    sendChatMessage(getSowGameMessage(mancalaGame, pitIdx, mancalaGameVO));
-                }
-
-            } catch (MancalaGameException e) {
-                sendOperationInvalidMessage(e);
-            }
-
-
+            sowPits(gameRequestMessage);
         }
     }
 
-    private GameMessage getSowGameMessage(MancalaGame mancalaGame, int pitIdx, MancalaGameVO mancalaGameVO) {
-        GameMessage gameMessage = new GameMessage();
-        gameMessage.setData(mancalaGameVO);
-        if (mancalaGame.isGameOver()) {
-            gameMessage.setMessage(mancalaGameVO.getGameInfo());
-            gameMessage.setStatus(MessageStatus.END);
-        } else {
-            gameMessage.setMessage("Player " + player + " sow pit Idx " + pitIdx);
-            gameMessage.setStatus(MessageStatus.SOW);
+    private void initializeGame() {
+        GameMessage gameMessage = buildGameMessageWithStatus(this.player + " is ready......", MessageStatus.READY);
+
+        synchronized (WEB_SOCKET_CHESS_GAMER) {
+            if (isPrepareAll()) {
+                Object[] players = WEB_SOCKET_CHESS_GAMER.keySet().toArray();
+                MancalaGame mancalaGame = new MancalaGame(players[0].toString(), players[1].toString());
+
+                persistGamePlayers(mancalaGame);
+                gameMessage = buildGameStartMessage(mancalaGame);
+            }
         }
+        sendChatMessage(gameMessage, GAME_PLAYERS_ENDPOINT.get(gameId));
+    }
+
+    private void sowPits(GameRequestMessage rep) throws JsonProcessingException {
+        try {
+            Optional<MancalaGame> optionalMancalaGame = gameRepository.findById(gameId);
+            if (optionalMancalaGame.isPresent()) {
+                MancalaGame mancalaGame = optionalMancalaGame.get();
+                mancalaGame.sow(new SowRequest(player, rep.getPitIdx()));
+                MancalaGameVO mancalaGameVO = new MancalaGameVO(mancalaGame);
+                maintainGamePersistence(mancalaGame, mancalaGameVO);
+                sendChatMessage(getSowGameMessage(mancalaGame, rep.getPitIdx(), mancalaGameVO), GAME_PLAYERS_ENDPOINT.get(gameId));
+            }
+
+        } catch (MancalaGameException e) {
+            sendOperationInvalidMessage(e);
+        }
+    }
+
+    private GameMessage<String> buildGameMessageWithStatus(String message, MessageStatus messageStatus) {
+        GameMessage<String> gameMessage = new GameMessage<>();
+        gameMessage.setStatus(messageStatus);
+        gameMessage.setMessage(message);
+        return gameMessage;
+    }
+
+    private GameMessage<MancalaGameVO> buildGameStartMessage(MancalaGame mancalaGame) {
+        GameMessage<MancalaGameVO> gameMessage = new GameMessage<>();
+        MancalaGameVO mancalaGameVO = new MancalaGameVO(mancalaGame);
+        gameMessage.setData(mancalaGameVO);
+        gameMessage.setStatus(MessageStatus.START);
+        gameMessage.setMessage("Game started! It's " + mancalaGame.getActiveBoardSegment().getPlayer() + "'s turn!");
+        return gameMessage;
+    }
+
+
+    private void persistGamePlayers(MancalaGame mancalaGame) {
+        gameRepository.save(mancalaGame);
+        List<MancalaEndpoint> gameEndPoints = new ArrayList<>();
+        gameEndPoints.addAll(WEB_SOCKET_CHESS_GAMER.values());
+        GAME_PLAYERS_ENDPOINT.put(mancalaGame.getGameId(), gameEndPoints);
+        WEB_SOCKET_CHESS_GAMER.clear();
+    }
+
+    private GameMessage<String> getSowGameMessage(MancalaGame mancalaGame, int pitIdx, MancalaGameVO mancalaGameVO) {
+        GameMessage<String> gameMessage = null;
+        if (mancalaGame.isGameOver()) {
+            buildGameOverMessage(mancalaGameVO, mancalaGameVO.getGameInfo(), MessageStatus.END);
+        } else {
+            buildGameOverMessage(mancalaGameVO, "Player " + player + " sow pit Idx " + pitIdx, MessageStatus.SOW);
+        }
+        return gameMessage;
+    }
+
+    private GameMessage<MancalaGameVO> buildGameOverMessage(MancalaGameVO mancalaGameVO, String gameInfo, MessageStatus end) {
+        GameMessage<MancalaGameVO> gameMessage = new GameMessage<>();
+        gameMessage.setData(mancalaGameVO);
+        gameMessage.setMessage(gameInfo);
+        gameMessage.setStatus(end);
         return gameMessage;
     }
 
@@ -138,9 +159,7 @@ public class MancalaEndpoint {
     }
 
     private void sendOperationInvalidMessage(MancalaGameException e) throws JsonProcessingException {
-        GameMessage gameMessage = new GameMessage();
-        gameMessage.setStatus(MessageStatus.OPERATION_ERR);
-        gameMessage.setMessage(e.getMessage());
+        GameMessage<String> gameMessage = buildGameMessageWithStatus(e.getMessage(), MessageStatus.OPERATION_ERR);
         this.sendMessage(mapper.writeValueAsString(gameMessage));
     }
 
@@ -158,11 +177,8 @@ public class MancalaEndpoint {
     }
 
 
-    public static void sendChatMessage(GameMessage gameMessage) {
-        Set<String> keySet = WEB_SOCKET_CHESS_GAMER.keySet();
-        MancalaEndpoint chessServer = null;
-        for (String username : keySet) {
-            chessServer = WEB_SOCKET_CHESS_GAMER.get(username);
+    public void sendChatMessage(GameMessage<String> gameMessage, List<MancalaEndpoint> mancalaEndpoints) {
+        mancalaEndpoints.forEach(mancalaEndpoint -> {
             String msg = null;
             try {
                 msg = mapper.writeValueAsString(gameMessage);
@@ -170,15 +186,15 @@ public class MancalaEndpoint {
                 msg = e.getMessage();
                 throw new MancalaGameException(e.getMessage(), e);
             } finally {
-                chessServer.sendMessage(msg);
+                mancalaEndpoint.sendMessage(msg);
             }
+        });
 
-        }
     }
 
     @OnClose
     public void onClose() {
-        WEB_SOCKET_CHESS_GAMER.remove(this.player);
+        GAME_PLAYERS_ENDPOINT.remove(this.gameId);
         if (this.session.isOpen()) {
             try {
                 this.session.close();
@@ -190,17 +206,9 @@ public class MancalaEndpoint {
     }
 
 
-    protected Integer getColor() {
-        int size = WEB_SOCKET_CHESS_GAMER.size();
-        return size == 1 ? 1 : -1;
-    }
-
-
     public static boolean isPrepareAll() {
         Collection<MancalaEndpoint> values = WEB_SOCKET_CHESS_GAMER.values();
-        if (values.size() != 2)
-            return false;
-        return true;
+        return values.size() >= 2;
     }
 
 
