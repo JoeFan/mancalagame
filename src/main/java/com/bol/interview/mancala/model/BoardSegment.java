@@ -1,17 +1,38 @@
 package com.bol.interview.mancala.model;
 
+import com.bol.interview.mancala.constants.MancalaConstants;
 import com.bol.interview.mancala.request.SowRequest;
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.IntStream;
 
 @Data
 public class BoardSegment {
+
 
     private String id;
     private String player;
     private Pit house;
     private List<Pit> pits;
+
+    public BoardSegment(String player) {
+        this.player = player;
+        this.id = UUID.randomUUID().toString();
+        initPits();
+
+    }
+
+    private void initPits() {
+        List<Pit> tempPitList = new ArrayList<>();
+        IntStream.range(0, MancalaConstants.PITS_NUM).forEach(idx ->
+                tempPitList.add(new Pit(MancalaConstants.INIT_STONE_NUM)));
+        house = new Pit(MancalaConstants.INIT_HOUSE_STONE_CNT);
+        pits = Collections.unmodifiableList(tempPitList);
+    }
 
     public int clearStonesByPitIdx(int pitIdx) {
         int stoneCnt = pits.get(pitIdx).getStoneCnt();

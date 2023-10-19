@@ -6,4 +6,6 @@ public class MancalaConstants {
     public static final int PITS_NUM = 6;
     public static final int LAST_PIT_INDEX = 5;
     public static final int HOUSE_INDEX = 6;
+    public static final int INIT_STONE_NUM = 6;
+    public static final int INIT_HOUSE_STONE_CNT = 0;
 }

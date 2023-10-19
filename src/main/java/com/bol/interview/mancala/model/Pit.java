@@ -8,6 +8,10 @@ public class Pit {
     private int idx;
     private int stoneCnt;
 
+    public Pit(int stoneNum) {
+        this.stoneCnt = stoneNum;
+    }
+
     public void addStones(int stoneNum) {
         stoneCnt += stoneNum;
     }
