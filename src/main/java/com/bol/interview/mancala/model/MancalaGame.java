@@ -56,4 +56,7 @@ public class MancalaGame {
     }
 
 
+    public boolean isGameOver() {
+        return false;
+    }
 }
