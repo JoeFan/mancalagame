@@ -1,10 +1,12 @@
 package com.bol.interview.mancala.model;
 
 import com.bol.interview.mancala.request.SowRequest;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Data
+@Getter
+@Setter
 @Document("mancalagame")
 public class MancalaGame {
 
