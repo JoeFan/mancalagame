@@ -16,7 +16,13 @@ public class MancalaGame {
 
     private String gameId;
 
+    public MancalaGame(String playera, String playerb) {
+
+    }
+
     public void sow(SowRequest sowRequest){
 
     }
+
+
 }
