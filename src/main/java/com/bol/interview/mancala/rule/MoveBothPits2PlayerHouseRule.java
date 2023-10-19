@@ -3,7 +3,6 @@ package com.bol.interview.mancala.rule;
 import com.bol.interview.mancala.model.BoardSegment;
 import com.bol.interview.mancala.model.MancalaGame;
 import com.bol.interview.mancala.model.SegmentSowResult;
-import com.bol.interview.mancala.request.SowRequest;
 
 public class MoveBothPits2PlayerHouseRule implements GameRule{
 

@@ -3,7 +3,6 @@ package com.bol.interview.mancala.model;
 import com.bol.interview.mancala.request.SowRequest;
 import lombok.Data;
 
-import javax.swing.text.Segment;
 import java.util.List;
 
 @Data
