@@ -1,5 +1,6 @@
 package com.bol.interview.mancala.model;
 
+import com.bol.interview.mancala.request.SowRequest;
 import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -12,4 +13,8 @@ public class MancalaGame {
     private BoardSegment inactiveBoardSegment;
 
     private String gameId;
+
+    private void sow(SowRequest sowRequest){
+
+    }
 }
