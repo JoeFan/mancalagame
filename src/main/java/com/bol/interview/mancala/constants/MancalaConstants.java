@@ -8,4 +8,7 @@ public class MancalaConstants {
     public static final int HOUSE_INDEX = 6;
     public static final int INIT_STONE_NUM = 6;
     public static final int INIT_HOUSE_STONE_CNT = 0;
+
+    public static final String GAME_RESULT_EQUAL = "Game is Over! Two players have equal number of stones";
+
 }

@@ -6,6 +6,7 @@ import com.bol.interview.mancala.request.SowRequest;
 import com.bol.interview.mancala.rule.MancalaGameRules;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.UUID;
@@ -19,6 +20,7 @@ public class MancalaGame {
 
     private BoardSegment inactiveBoardSegment;
 
+    @Id
     private String gameId;
 
     public MancalaGame(String activePlayer, String player) {
@@ -60,5 +62,19 @@ public class MancalaGame {
 
     public boolean isGameOver() {
         return false;
+    }
+
+    public String getSuccessInfo() {
+        if (isGameOver()) {
+            int houseStoneCnt = activeBoardSegment.getHouseStoneCnt();
+            int inactiveBoardSegmentHouseStoneCnt = inactiveBoardSegment.getHouseStoneCnt();
+            if (houseStoneCnt == inactiveBoardSegmentHouseStoneCnt) {
+                return MancalaConstants.GAME_RESULT_EQUAL;
+            }
+            return houseStoneCnt > inactiveBoardSegmentHouseStoneCnt ?
+                    activeBoardSegment.getPlayer() : inactiveBoardSegment.getPlayer();
+        }
+        return "";
+
     }
 }

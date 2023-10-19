@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>Mancala Game</title>
+    <script type="text/javascript" src="js/jquery-3.2.1.js"></script>
+    <style type="text/css">
+    </style>
+
+    <link rel="stylesheet" href="https://unpkg.com/purecss@0.6.2/build/pure-min.css"
+          integrity="sha384-UQiGfs9ICog+LwheBSRCt1o5cbyKIHbwjWscjemyBMT9YCUMZffs6UqUTd0hObXD"
+          crossorigin="anonymous">
+	<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+	<p align="center"><font size="20">Mancala Game</font></p>
+	<table border="1" align="center">
+		<tr height="80">
+			<td>
+				<div>
+					<input type="text" id="username" placeholder="Please Input your Nick name!"/>
+					<button id="login">Login</button>
+					<button id="startGame" disabled="disabled">Start Game</button>
+				</div>
+
+			</td>
+			<td width="500" rowspan="2" height="500">
+
+<!--				<p align="center">Mancala Game</p>-->
+				<div class="pure-u-2-3">
+					<!-- Game Board -->
+					<div class="pure-g" id="currentPlayer">
+						<!-- Upper Row -->
+						<div class="pure-u-1-8">
+							<p class="box hide">?</p>
+						</div>
+						<div class="pure-u-1-8">
+							<p class="box player_one" id="opponent-pit-5">?</p>
+						</div>
+						<div class="pure-u-1-8">
+							<p class="box player_one" id="opponent-pit-4">?</p>
+						</div>
+						<div class="pure-u-1-8">
+							<p class="box player_one" id="opponent-pit-3">?</p>
+						</div>
+						<div class="pure-u-1-8">
+							<p class="box player_one" id="opponent-pit-2">?</p>
+						</div>
+						<div class="pure-u-1-8">
+							<p class="box player_one" id="opponent-pit-1">?</p>
+						</div>
+						<div class="pure-u-1-8">
+							<p class="box player_one" id="opponent-pit-0">?</p>
+						</div>
+						<div class="pure-u-1-8">
+							<p class="box hide">?</p>
+						</div>
+					</div>
+					<!-- Upper Row -->
+
+					<div class="pure-g" id="houseandturn">
+						<!-- Mid Row -->
+						<div class="pure-u-1-8">
+							<p class="box player_one" id="opponent-house">?</p>
+						</div>
+						<div class="pure-u-3-4">
+							<p class="player_turn center" id="player_turn">Player Turn</p>
+						</div>
+						<div class="pure-u-1-8">
+							<p class="box player_two" id="house">?</p>
+						</div>
+					</div>
+					<!-- Mid Row -->
+
+					<div class="pure-g" id="opponentplayer">
+						<!-- Lower Row -->
+						<div class="pure-u-1-8">
+							<p class="box hide">?</p>
+						</div>
+						<div class="pure-u-1-8">
+							<p class="box player_two" id="pit-0">?</p>
+						</div>
+						<div class="pure-u-1-8">
+							<p class="box player_two" id="pit-1">?</p>
+						</div>
+						<div class="pure-u-1-8">
+							<p class="box player_two" id="pit-2">?</p>
+						</div>
+						<div class="pure-u-1-8">
+							<p class="box player_two" id="pit-3">?</p>
+						</div>
+						<div class="pure-u-1-8">
+							<p class="box player_two" id="pit-4">?</p>
+						</div>
+						<div class="pure-u-1-8">
+							<p class="box player_two" id="pit-5">?</p>
+						</div>
+						<div class="pure-u-1-8">
+							<p class="box hide">?</p>
+						</div>
+					</div>
+				</div>
+			</td>
+		</tr>
+		<tr height="450">
+			<td>
+				<div id="show" style="height:300px;width:300px;overflow:scroll;background:#EEEEEE;"></div>
+			</td>
+		</tr>
+	</table>
+</body>
+<script type="text/javascript" src="js/mancalagame.js"></script>
+
+</html>
