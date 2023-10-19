@@ -44,13 +44,15 @@ public class BoardSegment {
             stoneCnt--;
             pitIdx++;
         }
-        return getSowResult(stoneCnt, pitIdx-1);
+        return getSowResult(stoneCnt, pitIdx-1, sowRequest.getPlayer());
     }
 
-    private SegmentSowResult getSowResult(int stoneCnt, int pitIdx) {
+    private SegmentSowResult getSowResult(int stoneCnt, int pitIdx, String sowedPlayer) {
         SegmentSowResult segmentSowResult = new SegmentSowResult();
         segmentSowResult.setLeftStoneCnt(stoneCnt);
         segmentSowResult.setLastSowPitIndex(pitIdx);
+        segmentSowResult.setSowRequestPlayer(sowedPlayer);
+        segmentSowResult.setLastPitOwner(this.player);
         return segmentSowResult;
     }
 

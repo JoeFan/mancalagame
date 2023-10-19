@@ -3,6 +3,7 @@ package com.bol.interview.mancala.service;
 import com.bol.interview.mancala.exception.MancalaGameException;
 import com.bol.interview.mancala.model.MancalaGame;
 import com.bol.interview.mancala.repository.MancalaGameRepository;
+import com.bol.interview.mancala.request.SowRequest;
 import com.bol.interview.mancala.vo.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -99,7 +100,8 @@ public class MancalaEndpoint {
                 if (optionalMancalaGame.isPresent()) {
                     MancalaGame mancalaGame = optionalMancalaGame.get();
                     int pitIdx = rep.getPitIdx();
-                    mancalaGame.sow(player, pitIdx);
+                    SowRequest sowRequest = new SowRequest(player, pitIdx);
+                    mancalaGame.sow(sowRequest);
 
                     MancalaGameVO mancalaGameVO = new MancalaGameVO(mancalaGame);
                     maintainGamePersistence(mancalaGame, mancalaGameVO);

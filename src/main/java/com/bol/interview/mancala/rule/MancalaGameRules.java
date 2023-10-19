@@ -8,7 +8,7 @@ import java.util.Arrays;
 public class MancalaGameRules {
 
     private static GameRule[] rules = new GameRule[]{
-            new MoveBothPits2PlyaerHouseRule(),
+            new MoveBothPits2PlayerHouseRule(),
             new AnotherRoundRule(),
             new SwitchTurnRule()
     };
