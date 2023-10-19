@@ -14,7 +14,7 @@ public class MancalaGame {
 
     private String gameId;
 
-    private void sow(SowRequest sowRequest){
+    public void sow(SowRequest sowRequest){
 
     }
 }
