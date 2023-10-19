@@ -4,7 +4,9 @@ import com.bol.interview.mancala.constants.MancalaConstants;
 import com.bol.interview.mancala.exception.MancalaGameException;
 import com.bol.interview.mancala.request.SowRequest;
 import com.bol.interview.mancala.rule.MancalaGameRules;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -14,6 +16,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @Document("mancalagame")
+@AllArgsConstructor
+@NoArgsConstructor
 public class MancalaGame {
 
     private BoardSegment activeBoardSegment;
@@ -41,13 +45,14 @@ public class MancalaGame {
         BoardSegment currentBoardSegment = activeBoardSegment;
         BoardSegment nextBoardSegment = inactiveBoardSegment;
         SegmentSowResult segmentSowResult = null;
+        int sowPitIdx = sowRequest.getPitIdx() + 1;
         while(stoneCnt != 0){
-            segmentSowResult = currentBoardSegment.sow(sowRequest, stoneCnt);
+            segmentSowResult = currentBoardSegment.sow(sowPitIdx, sowRequest.getPlayer(), stoneCnt);
             stoneCnt = segmentSowResult.getLeftStoneCnt();
             BoardSegment temp = currentBoardSegment;
             currentBoardSegment = nextBoardSegment;
             nextBoardSegment = temp;
-            sowRequest.setPitIdx(0);
+            sowPitIdx = 0;
         }
 
         return segmentSowResult;
@@ -56,6 +61,10 @@ public class MancalaGame {
     private void checkSowRequest(SowRequest sowRequest) {
         if(sowRequest.getPitIdx() < 0 || sowRequest.getPitIdx() > 5){
             throw new MancalaGameException(MancalaConstants.PIT_INDEX_INVALID);
+        }
+
+        if(!sowRequest.getPlayer().equals(activeBoardSegment.getPlayer())){
+            throw new MancalaGameException(MancalaConstants.MSG_NOT_PALYER_TURN);
         }
     }
 

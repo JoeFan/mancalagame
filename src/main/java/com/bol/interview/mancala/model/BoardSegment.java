@@ -35,7 +35,7 @@ public class BoardSegment {
     }
 
     public int clearStonesByPitIdx(int pitIdx) {
-        int stoneCnt = pits.get(pitIdx).getStoneCnt();
+        int stoneCnt = pits.get(pitIdx).getStoneNum();
         pits.get(pitIdx).clear();
         return stoneCnt;
     }
@@ -45,26 +45,25 @@ public class BoardSegment {
     }
 
     public int getStoneCntByPitIdx(int pitIdx) {
-        return pits.get(pitIdx).getStoneCnt();
+        return pits.get(pitIdx).getStoneNum();
     }
 
     public int getHouseStoneCnt() {
-        return house.getStoneCnt();
+        return house.getStoneNum();
     }
 
-    public SegmentSowResult sow(SowRequest sowRequest, int stoneCnt) {
-        int pitIdx = sowRequest.getPitIdx();
+    public SegmentSowResult sow(int pitIdx, String sowingPlayer, int stoneCnt) {
         while (pitIdx < pits.size() && stoneCnt > 0) {
             pits.get(pitIdx).sow();
             stoneCnt--;
             pitIdx++;
         }
-        if(stoneCnt > 0 && this.player.equals(sowRequest.getPlayer())){
+        if(stoneCnt > 0 && this.player.equals(sowingPlayer)){
             house.sow();
             stoneCnt--;
             pitIdx++;
         }
-        return getSowResult(stoneCnt, pitIdx-1, sowRequest.getPlayer());
+        return getSowResult(stoneCnt, pitIdx-1, sowingPlayer);
     }
 
     private SegmentSowResult getSowResult(int stoneCnt, int pitIdx, String sowedPlayer) {

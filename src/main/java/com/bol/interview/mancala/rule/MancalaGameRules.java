@@ -7,9 +7,10 @@ import java.util.Arrays;
 
 public class MancalaGameRules {
 
+    //the order of the rules has impact on the result!
     private static GameRule[] rules = new GameRule[]{
-            new MoveBothPits2PlayerHouseRule(),
             new AnotherRoundRule(),
+            new MoveBothPits2PlayerHouseRule(),
             new SwitchTurnRule()
     };
     public static boolean applyRules(MancalaGame mancalaGame, SegmentSowResult segmentSowResult){

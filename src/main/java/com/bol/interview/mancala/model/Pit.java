@@ -5,22 +5,21 @@ import lombok.Data;
 @Data
 public class Pit {
 
-    private int idx;
-    private int stoneCnt;
+    private int stoneNum;
 
     public Pit(int stoneNum) {
-        this.stoneCnt = stoneNum;
+        this.stoneNum = stoneNum;
     }
 
     public void addStones(int stoneNum) {
-        stoneCnt += stoneNum;
+        this.stoneNum += stoneNum;
     }
 
     public void clear() {
-        this.stoneCnt = 0;
+        this.stoneNum = 0;
     }
 
     public void sow() {
-        stoneCnt+=1;
+        stoneNum +=1;
     }
 }
