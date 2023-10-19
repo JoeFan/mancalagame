@@ -63,7 +63,6 @@ class MancalaGameTest {
         assertEquals(expectHouseStoneCnt, preActiveBoardSegment.getHouseStoneCnt());
         assertEquals(preActiveBoardSegment, mancalaGame.getInactiveBoardSegment());
         assertEquals(preInActiveSegment, mancalaGame.getActiveBoardSegment());
-        mancalaGame.sow(sowRequest);
     }
 
     @Test
@@ -100,8 +99,8 @@ class MancalaGameTest {
         int expectLastPitStoneCnt = 7;
 
         preActiveBoardSegment.clearStonesByPitIdx(startPitIdx);
-        preInActiveSegment.clearStonesByPitIdx(0);
-        preActiveBoardSegment.addStones2Pit(startPitIdx,6);
+        preInActiveSegment.clearStonesByPitIdx(startPitIdx);
+        preActiveBoardSegment.addStones2Pit(startPitIdx,7);
         SowRequest sowRequest = new SowRequest("PlayerA",0);
         mancalaGame.sow(sowRequest);
 
