@@ -6,4 +6,12 @@ import lombok.Data;
 public class Pit {
     private int idx;
     private int stoneCnt;
+
+    public void addStones(int stoneNum) {
+        stoneCnt += stoneNum;
+    }
+
+    public void clear() {
+        this.stoneCnt = 0;
+    }
 }
