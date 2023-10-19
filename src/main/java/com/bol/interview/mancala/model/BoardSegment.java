@@ -4,10 +4,7 @@ import com.bol.interview.mancala.constants.MancalaConstants;
 import com.bol.interview.mancala.request.SowRequest;
 import lombok.Data;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.IntStream;
 
 @Data
@@ -38,6 +35,11 @@ public class BoardSegment {
         int stoneCnt = pits.get(pitIdx).getStoneNum();
         pits.get(pitIdx).clear();
         return stoneCnt;
+    }
+
+    public boolean allPitsEmpty() {
+        Optional<Pit> nonEmptyPit = pits.stream().filter(pit->!pit.isEmpty()).findFirst();
+        return !nonEmptyPit.isPresent();
     }
 
     public void addStones2Pit(int pitIdx, int stoneNum) {

@@ -22,4 +22,8 @@ public class Pit {
     public void sow() {
         stoneNum +=1;
     }
+
+    public boolean isEmpty() {
+        return stoneNum == 0;
+    }
 }

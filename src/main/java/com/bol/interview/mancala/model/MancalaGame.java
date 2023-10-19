@@ -70,7 +70,7 @@ public class MancalaGame {
 
 
     public boolean isGameOver() {
-        return false;
+        return activeBoardSegment.allPitsEmpty() || inactiveBoardSegment.allPitsEmpty();
     }
 
     public String getSuccessInfo() {
