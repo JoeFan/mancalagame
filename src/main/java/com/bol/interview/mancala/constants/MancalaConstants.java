@@ -5,4 +5,5 @@ public class MancalaConstants {
     public static final String MSG_NOT_PALYER_TURN = "It's not your turn!";
     public static final int PITS_NUM = 6;
     public static final int LAST_PIT_INDEX = 5;
+    public static final int HOUSE_INDEX = 6;
 }

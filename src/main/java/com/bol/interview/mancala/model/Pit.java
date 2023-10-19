@@ -14,4 +14,8 @@ public class Pit {
     public void clear() {
         this.stoneCnt = 0;
     }
+
+    public void sow() {
+        stoneCnt+=1;
+    }
 }
