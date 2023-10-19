@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @Document("mancalagame")
@@ -19,8 +21,10 @@ public class MancalaGame {
 
     private String gameId;
 
-    public MancalaGame(String playera, String playerb) {
-
+    public MancalaGame(String activePlayer, String player) {
+        this.gameId = UUID.randomUUID().toString();
+        activeBoardSegment = new BoardSegment(activePlayer);
+        inactiveBoardSegment = new BoardSegment(player);
     }
 
     public void sow(SowRequest sowRequest){
