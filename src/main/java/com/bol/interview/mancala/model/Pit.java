@@ -26,4 +26,10 @@ public class Pit {
     public boolean isEmpty() {
         return stoneNum == 0;
     }
+
+    public int removalAllStones() {
+        int stoneCnt = stoneNum;
+        stoneNum = 0;
+        return stoneCnt;
+    }
 }

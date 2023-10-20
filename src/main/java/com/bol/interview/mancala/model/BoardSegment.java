@@ -1,7 +1,6 @@
 package com.bol.interview.mancala.model;
 
 import com.bol.interview.mancala.constants.MancalaConstants;
-import com.bol.interview.mancala.request.SowRequest;
 import lombok.Data;
 
 import java.util.*;
@@ -79,5 +78,11 @@ public class BoardSegment {
 
     public void addStones2House(int stoneNum) {
         house.addStones(stoneNum);
+    }
+
+    public void moveAllPits2House() {
+        pits.forEach(pit -> {
+            house.addStones(pit.removalAllStones());
+        });
     }
 }

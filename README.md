@@ -1,14 +1,20 @@
 # Mancala Game Service
 
+### How to startup service
+* make sure you have mongo in local or use docker to setup mongo.
+* run: MancalaGameApplication
+* website in local: [http://localhost:8989/mancalagame](http://localhost:8989/mancalagame)
+
+### How to play:
+* Input your username, click "Login"
+* waiting for other join in. you can open another window and input a different username login.
+* then click start the game will be started.
+* the red color is your pits and big pits. click on the pit which you want to sow.
+
 ### Clarification
 Because no expectation on Non-Functional requirements, most of the tech choice criteria is easy to set up code
 some defects:
-* Code is Not Runnable, only draft design and function implementation
-* Some api is only for setup code easily. But not proper in acutal project. eg. like create api [MancalaGameController.create](./src/main/java/com/bol/interview/mancala/controller/MancalaGameController.java) 
-* Some tech choice only add in pom dependency, not implement in code. 
-  * Websocket
-* Using object defined in module directly in different layers. For actual usage will define vo, dto, do accordingly.
-  
+* mixed backed and frontend code in same service.
 
 
 ### Tech Involved:
@@ -53,7 +59,7 @@ models in package:com.bol.interview.mancala.model
 |              | currentPitIdx        | int             | last sowed pit index                        |
 |              | action               | Sowaction       | the action after segment sow                |
 
-### Comments
+
 
 
 

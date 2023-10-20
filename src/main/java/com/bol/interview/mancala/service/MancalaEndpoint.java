@@ -36,7 +36,7 @@ public class MancalaEndpoint {
     private static MancalaGameRepository gameRepository;
 
     @Autowired
-    public static void setGameRepository(MancalaGameRepository mancalaGameRepository) {
+    public void setGameRepository(MancalaGameRepository mancalaGameRepository) {
         gameRepository = mancalaGameRepository;
     }
 
@@ -58,7 +58,7 @@ public class MancalaEndpoint {
             sendMessage(this, "user name " + username + " is already exist! please rename a new one!");
         }
         WEB_SOCKET_CHESS_GAMER.put(player, this);
-        sendChatMessage(buildGameMessageWithStatus(username, MessageStatus.READY), GAME_PLAYERS_ENDPOINT.get(gameId));
+        sendChatMessage(buildGameMessageWithStatus(username, MessageStatus.READY), WEB_SOCKET_CHESS_GAMER.get(username));
     }
 
 
@@ -77,22 +77,29 @@ public class MancalaEndpoint {
     }
 
     private void initializeGame() {
-        GameMessage gameMessage = buildGameMessageWithStatus(this.player + " is ready......", MessageStatus.READY);
 
-        synchronized (WEB_SOCKET_CHESS_GAMER) {
-            if (isPrepareAll()) {
+        if (isPrepareAll()) {
+            synchronized (WEB_SOCKET_CHESS_GAMER) {
                 Object[] players = WEB_SOCKET_CHESS_GAMER.keySet().toArray();
                 MancalaGame mancalaGame = new MancalaGame(players[0].toString(), players[1].toString());
-
+                this.gameId = mancalaGame.getGameId();
                 persistGamePlayers(mancalaGame);
-                gameMessage = buildGameStartMessage(mancalaGame);
+                GameMessage<MancalaGameVO> gameMessage = buildGameStartMessage(mancalaGame);
+                sendChatMessage(gameMessage, GAME_PLAYERS_ENDPOINT.get(gameId));
             }
+        }else{
+            sendChatMessage(buildGameMessageWithStatus(this.player + " is ready......", MessageStatus.READY), this);
         }
-        sendChatMessage(gameMessage, GAME_PLAYERS_ENDPOINT.get(gameId));
+
+
     }
 
     private void sowPits(GameRequestMessage rep) throws JsonProcessingException {
         try {
+            String gameId = rep.getGameId();
+            if(this.gameId == null){
+                this.gameId = gameId;
+            }
             Optional<MancalaGame> optionalMancalaGame = gameRepository.findById(gameId);
             if (optionalMancalaGame.isPresent()) {
                 MancalaGame mancalaGame = optionalMancalaGame.get();
@@ -132,12 +139,12 @@ public class MancalaEndpoint {
         WEB_SOCKET_CHESS_GAMER.clear();
     }
 
-    private GameMessage<String> getSowGameMessage(MancalaGame mancalaGame, int pitIdx, MancalaGameVO mancalaGameVO) {
-        GameMessage<String> gameMessage = null;
+    private GameMessage getSowGameMessage(MancalaGame mancalaGame, int pitIdx, MancalaGameVO mancalaGameVO) {
+        GameMessage gameMessage = null;
         if (mancalaGame.isGameOver()) {
-            buildGameOverMessage(mancalaGameVO, mancalaGameVO.getGameInfo(), MessageStatus.END);
+            gameMessage = buildGameOverMessage(mancalaGameVO, mancalaGameVO.getGameInfo(), MessageStatus.END);
         } else {
-            buildGameOverMessage(mancalaGameVO, "Player " + player + " sow pit Idx " + pitIdx, MessageStatus.SOW);
+            gameMessage = buildGameOverMessage(mancalaGameVO, "Player " + player + " sow pit Idx " + pitIdx, MessageStatus.SOW);
         }
         return gameMessage;
     }
@@ -177,18 +184,23 @@ public class MancalaEndpoint {
     }
 
 
-    public void sendChatMessage(GameMessage<String> gameMessage, List<MancalaEndpoint> mancalaEndpoints) {
+    public void sendChatMessage(GameMessage gameMessage, List<MancalaEndpoint> mancalaEndpoints) {
         mancalaEndpoints.forEach(mancalaEndpoint -> {
-            String msg = null;
-            try {
-                msg = mapper.writeValueAsString(gameMessage);
-            } catch (JsonProcessingException e) {
-                msg = e.getMessage();
-                throw new MancalaGameException(e.getMessage(), e);
-            } finally {
-                mancalaEndpoint.sendMessage(msg);
-            }
+            sendChatMessage(gameMessage, mancalaEndpoint);
         });
+
+    }
+
+    public void sendChatMessage(GameMessage gameMessage, MancalaEndpoint mancalaEndpoint) {
+        String msg = null;
+        try {
+            msg = mapper.writeValueAsString(gameMessage);
+        } catch (JsonProcessingException e) {
+            msg = e.getMessage();
+            throw new MancalaGameException(e.getMessage(), e);
+        } finally {
+            mancalaEndpoint.sendMessage(msg);
+        }
 
     }
 

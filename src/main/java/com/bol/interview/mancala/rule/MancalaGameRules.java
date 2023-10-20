@@ -11,7 +11,8 @@ public class MancalaGameRules {
     private static GameRule[] rules = new GameRule[]{
             new AnotherRoundRule(),
             new MoveBothPits2PlayerHouseRule(),
-            new SwitchTurnRule()
+            new SwitchTurnRule(),
+            new GameOverRule()
     };
     public static boolean applyRules(MancalaGame mancalaGame, SegmentSowResult segmentSowResult){
         if(segmentSowResult == null){
