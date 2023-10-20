@@ -11,13 +11,17 @@ public class MancalaGameRules {
     private static GameRule[] rules = new GameRule[]{
             new AnotherRoundRule(),
             new MoveBothPits2PlayerHouseRule(),
-            new SwitchTurnRule(),
-            new GameOverRule()
+            new SwitchTurnRule()
+
     };
     public static boolean applyRules(MancalaGame mancalaGame, SegmentSowResult segmentSowResult){
         if(segmentSowResult == null){
             return false;
         }
-        return Arrays.stream(rules).filter(gameRule -> gameRule.apply(mancalaGame, segmentSowResult)).findFirst().isPresent();
+        boolean gameRuleApplied = Arrays.stream(rules).filter(gameRule -> gameRule.apply(mancalaGame, segmentSowResult)).findFirst().isPresent();
+        GameOverRule gameOverRule = new GameOverRule();
+        boolean gameover = gameOverRule.apply(mancalaGame, segmentSowResult);
+        return gameRuleApplied ||gameover;
+
     }
 }
