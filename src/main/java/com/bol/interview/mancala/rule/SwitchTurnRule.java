@@ -4,7 +4,7 @@ import com.bol.interview.mancala.model.BoardSegment;
 import com.bol.interview.mancala.model.MancalaGame;
 import com.bol.interview.mancala.model.SegmentSowResult;
 
-public class SwitchTurnRule implements GameRule{
+public class SwitchTurnRule implements GameRule {
 
 
     @Override

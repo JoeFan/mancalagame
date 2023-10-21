@@ -5,14 +5,14 @@ import com.bol.interview.mancala.model.BoardSegment;
 import com.bol.interview.mancala.model.MancalaGame;
 import com.bol.interview.mancala.model.SegmentSowResult;
 
-public class MoveBothPits2PlayerHouseRule implements GameRule{
+public class MoveBothPits2PlayerHouseRule implements GameRule {
 
     @Override
-    public boolean apply(MancalaGame mancalaGame, SegmentSowResult segmentSowResult){
+    public boolean apply(MancalaGame mancalaGame, SegmentSowResult segmentSowResult) {
         int lastSowPitIdx = segmentSowResult.getLastSowPitIndex();
         BoardSegment playerSegment = mancalaGame.getActiveBoardSegment();
 
-        if(segmentSowResult.isLastOwnPlayerOwnPit() && segmentSowResult.isLastSowInEmptyPit()){
+        if (segmentSowResult.isLastOwnPlayerOwnPit() && segmentSowResult.isLastSowInEmptyPit()) {
             playerSegment.addStones2House(playerSegment.clearStonesByPitIdx(lastSowPitIdx));
             int opponentPitIdx = MancalaConstants.LAST_PIT_INDEX - lastSowPitIdx;
             int stoneNum = mancalaGame.getInactiveBoardSegment().clearStonesByPitIdx(opponentPitIdx);

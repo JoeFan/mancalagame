@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Slf4j
 @Controller
 public class MancalaGameWebsocketController {
-    @RequestMapping({"/","mancalagame"})
-    public String toMancalaGame(){
+    @RequestMapping({"/", "mancalagame"})
+    public String toMancalaGame() {
         return "mancalagame";
     }
 

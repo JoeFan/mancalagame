@@ -20,7 +20,7 @@ public class Pit {
     }
 
     public void sow() {
-        stoneNum +=1;
+        stoneNum += 1;
     }
 
     public boolean isEmpty() {

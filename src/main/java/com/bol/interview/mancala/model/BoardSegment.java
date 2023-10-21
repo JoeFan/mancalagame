@@ -36,7 +36,7 @@ public class BoardSegment {
     }
 
     public boolean allPitsEmpty() {
-        Optional<Pit> nonEmptyPit = pits.stream().filter(pit->!pit.isEmpty()).findFirst();
+        Optional<Pit> nonEmptyPit = pits.stream().filter(pit -> !pit.isEmpty()).findFirst();
         return !nonEmptyPit.isPresent();
     }
 
@@ -58,12 +58,12 @@ public class BoardSegment {
             stoneCnt--;
             pitIdx++;
         }
-        if(stoneCnt > 0 && this.player.equals(sowingPlayer)){
+        if (stoneCnt > 0 && this.player.equals(sowingPlayer)) {
             house.sow();
             stoneCnt--;
             pitIdx++;
         }
-        return getSowResult(stoneCnt, pitIdx-1, sowingPlayer);
+        return getSowResult(stoneCnt, pitIdx - 1, sowingPlayer);
     }
 
     private SegmentSowResult getSowResult(int stoneCnt, int pitIdx, String sowedPlayer) {
@@ -72,7 +72,7 @@ public class BoardSegment {
         segmentSowResult.setLastSowPitIndex(pitIdx);
         segmentSowResult.setSowRequestPlayer(sowedPlayer);
         segmentSowResult.setLastPitOwner(this.player);
-        segmentSowResult.setLastSowInEmptyPit(pitIdx <6 && this.getStoneCntByPitIdx(pitIdx) == 1);
+        segmentSowResult.setLastSowInEmptyPit(pitIdx < 6 && this.getStoneCntByPitIdx(pitIdx) == 1);
         return segmentSowResult;
     }
 

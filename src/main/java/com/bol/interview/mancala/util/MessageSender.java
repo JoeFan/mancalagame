@@ -15,7 +15,7 @@ import java.text.MessageFormat;
 import java.util.Collection;
 
 @Slf4j
-public class MessageSender{
+public class MessageSender {
 
     private static ObjectMapper mapper = new ObjectMapper();
 
@@ -39,17 +39,17 @@ public class MessageSender{
 
     public static void sendRoomIsFullMessage(MancalaEndpoint mancalaEndpoint) {
         GameMessage value = new GameMessage(MancalaConstants.MSG_ROOM_IS_FULL, MessageStatus.OPERATION_ERR);
-        MessageSender.sendMessage2Endpoint(value,mancalaEndpoint);
+        MessageSender.sendMessage2Endpoint(value, mancalaEndpoint);
     }
 
     public static void sendPlayerNameExistMsg(String username, MancalaEndpoint mancalaEndpoint) {
         String msg = MessageFormat.format(MancalaConstants.MSG_USER_NAME_EXIST, username);
         GameMessage value = new GameMessage(msg, MessageStatus.OPERATION_ERR);
-        MessageSender.sendMessage2Endpoint(value,mancalaEndpoint);
+        MessageSender.sendMessage2Endpoint(value, mancalaEndpoint);
     }
 
-    public static void sendPlayerIsReadyMessage(String username, Collection<MancalaEndpoint>mancalaEndpoints) {
-        String playerIsReady = MessageFormat. format(MancalaConstants.MSG_PLAYER_IS_READY, username);
+    public static void sendPlayerIsReadyMessage(String username, Collection<MancalaEndpoint> mancalaEndpoints) {
+        String playerIsReady = MessageFormat.format(MancalaConstants.MSG_PLAYER_IS_READY, username);
         GameMessage gameMessage = new GameMessage(playerIsReady, MessageStatus.READY);
         MessageSender.sendMessage2Endpoints(gameMessage, mancalaEndpoints);
     }
@@ -70,20 +70,20 @@ public class MessageSender{
     }
 
     private static void sendSowingResultMessage(GameRequestMessage gameRequestMessage, MancalaGameVO mancalaGameVO, Collection<MancalaEndpoint> mancalaEndpoints) {
-        String msg =MessageFormat.format(MancalaConstants.MSG_PLAYER_SOW_WITH_PIT_INDEX, gameRequestMessage.getUserName(), gameRequestMessage.getPitIdx());
+        String msg = MessageFormat.format(MancalaConstants.MSG_PLAYER_SOW_WITH_PIT_INDEX, gameRequestMessage.getUserName(), gameRequestMessage.getPitIdx());
         GameMessage sowGameMessage = new GameMessage<>(msg, mancalaGameVO, MessageStatus.SOW);
 
         MessageSender.sendMessage2Endpoints(sowGameMessage, mancalaEndpoints);
     }
 
-    private static void sendGameOverMessage(MancalaGameVO mancalaGameVO, Collection<MancalaEndpoint>mancalaEndpoints) {
+    private static void sendGameOverMessage(MancalaGameVO mancalaGameVO, Collection<MancalaEndpoint> mancalaEndpoints) {
         GameMessage sowGameMessage = new GameMessage<>(mancalaGameVO.getGameInfo(), mancalaGameVO, MessageStatus.END);
         MessageSender.sendMessage2Endpoints(sowGameMessage, mancalaEndpoints);
     }
 
     public static void sendOperationErrorMessage(String message, MancalaEndpoint mancalaEndpoint) {
         GameMessage gameMessage = new GameMessage(message, MessageStatus.OPERATION_ERR);
-        MessageSender.sendMessage2Endpoint(gameMessage,mancalaEndpoint);
+        MessageSender.sendMessage2Endpoint(gameMessage, mancalaEndpoint);
     }
 
 }

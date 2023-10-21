@@ -33,7 +33,7 @@ public class MancalaGame {
         inactiveBoardSegment = new BoardSegment(player);
     }
 
-    public void sow(SowRequest sowRequest){
+    public void sow(SowRequest sowRequest) {
         checkSowRequest(sowRequest);
         int stoneCnt = activeBoardSegment.clearStonesByPitIdx(sowRequest.getPitIdx());
         SegmentSowResult segmentSowResult = sow(sowRequest, stoneCnt);
@@ -46,7 +46,7 @@ public class MancalaGame {
         BoardSegment nextBoardSegment = inactiveBoardSegment;
         SegmentSowResult segmentSowResult = null;
         int sowPitIdx = sowRequest.getPitIdx() + 1;
-        while(stoneCnt != 0){
+        while (stoneCnt != 0) {
             segmentSowResult = currentBoardSegment.sow(sowPitIdx, sowRequest.getPlayer(), stoneCnt);
             stoneCnt = segmentSowResult.getLeftStoneCnt();
             BoardSegment temp = currentBoardSegment;
@@ -59,11 +59,11 @@ public class MancalaGame {
     }
 
     private void checkSowRequest(SowRequest sowRequest) {
-        if(sowRequest.getPitIdx() < 0 || sowRequest.getPitIdx() > 5){
+        if (sowRequest.getPitIdx() < 0 || sowRequest.getPitIdx() > 5) {
             throw new MancalaGameException(MancalaConstants.PIT_INDEX_INVALID);
         }
 
-        if(!sowRequest.getPlayer().equals(activeBoardSegment.getPlayer())){
+        if (!sowRequest.getPlayer().equals(activeBoardSegment.getPlayer())) {
             throw new MancalaGameException(MancalaConstants.MSG_NOT_PALYER_TURN);
         }
     }
