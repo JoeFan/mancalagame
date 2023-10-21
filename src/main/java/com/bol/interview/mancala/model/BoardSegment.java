@@ -73,6 +73,7 @@ public class BoardSegment {
         segmentSowResult.setLastSowPitIndex(pitIdx);
         segmentSowResult.setSowRequestPlayer(sowedPlayer);
         segmentSowResult.setLastPitOwner(this.player);
+        segmentSowResult.setLastSowInEmptyPit(this.getStoneCntByPitIdx(pitIdx) == 1);
         return segmentSowResult;
     }
 

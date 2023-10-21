@@ -9,4 +9,13 @@ public class SegmentSowResult {
     private int lastSowPitIndex;
     private String lastPitOwner;
 
+    private boolean lastSowInEmptyPit;
+
+    public boolean isLastOwnPlayerOwnPit(){
+        return sowRequestPlayer.equals(lastPitOwner);
+    }
+
+    public boolean isLastSowInEmptyPit() {
+        return lastSowInEmptyPit;
+    }
 }

@@ -8,15 +8,14 @@ import com.bol.interview.mancala.model.SegmentSowResult;
 public class MoveBothPits2PlayerHouseRule implements GameRule{
 
     @Override
-    public boolean apply(MancalaGame mancalaGame, SegmentSowResult result){
-        int lastSowPitIdx = result.getLastSowPitIndex();
-        String sowRequestPlayer = result.getSowRequestPlayer();
-        String lastPitOwner = result.getLastPitOwner();
+    public boolean apply(MancalaGame mancalaGame, SegmentSowResult segmentSowResult){
+        int lastSowPitIdx = segmentSowResult.getLastSowPitIndex();
         BoardSegment playerSegment = mancalaGame.getActiveBoardSegment();
 
-        if(sowRequestPlayer.equals(lastPitOwner) && playerSegment.getStoneCntByPitIdx(lastSowPitIdx) == 1){
+        if(segmentSowResult.isLastOwnPlayerOwnPit() && segmentSowResult.isLastSowInEmptyPit()){
             playerSegment.addStones2House(playerSegment.clearStonesByPitIdx(lastSowPitIdx));
-            int stoneNum = mancalaGame.getInactiveBoardSegment().clearStonesByPitIdx(MancalaConstants.LAST_PIT_INDEX - lastSowPitIdx);
+            int opponentPitIdx = MancalaConstants.LAST_PIT_INDEX - lastSowPitIdx;
+            int stoneNum = mancalaGame.getInactiveBoardSegment().clearStonesByPitIdx(opponentPitIdx);
             playerSegment.addStones2House(stoneNum);
             mancalaGame.setActiveBoardSegment(mancalaGame.getInactiveBoardSegment());
             mancalaGame.setInactiveBoardSegment(playerSegment);
