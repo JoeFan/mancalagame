@@ -58,7 +58,7 @@ public class MancalaEndpoint {
             sendMessage(this, "user name " + username + " is already exist! please rename a new one!");
         }
         WEB_SOCKET_CHESS_GAMER.put(player, this);
-        sendChatMessage(buildGameMessageWithStatus(username, MessageStatus.READY), WEB_SOCKET_CHESS_GAMER.get(username));
+        sendMessage2Endpoint(buildGameMessageWithStatus(username, MessageStatus.READY), WEB_SOCKET_CHESS_GAMER.get(username));
     }
 
 
@@ -85,10 +85,10 @@ public class MancalaEndpoint {
                 this.gameId = mancalaGame.getGameId();
                 persistGamePlayers(mancalaGame);
                 GameMessage<MancalaGameVO> gameMessage = buildGameStartMessage(mancalaGame);
-                sendChatMessage(gameMessage, GAME_PLAYERS_ENDPOINT.get(gameId));
+                sendMessage2Endpoint(gameMessage, GAME_PLAYERS_ENDPOINT.get(gameId));
             }
         }else{
-            sendChatMessage(buildGameMessageWithStatus(this.player + " is ready......", MessageStatus.READY), this);
+            sendMessage2Endpoint(buildGameMessageWithStatus(this.player + " is ready......", MessageStatus.READY), this);
         }
 
 
@@ -106,7 +106,7 @@ public class MancalaEndpoint {
                 mancalaGame.sow(new SowRequest(player, rep.getPitIdx()));
                 MancalaGameVO mancalaGameVO = new MancalaGameVO(mancalaGame);
                 maintainGamePersistence(mancalaGame, mancalaGameVO);
-                sendChatMessage(getSowGameMessage(mancalaGame, rep.getPitIdx(), mancalaGameVO), GAME_PLAYERS_ENDPOINT.get(gameId));
+                sendMessage2Endpoint(getSowGameMessage(mancalaGame, rep.getPitIdx(), mancalaGameVO), GAME_PLAYERS_ENDPOINT.get(gameId));
             }
 
         } catch (MancalaGameException e) {
@@ -184,20 +184,21 @@ public class MancalaEndpoint {
     }
 
 
-    public void sendChatMessage(GameMessage gameMessage, List<MancalaEndpoint> mancalaEndpoints) {
+    public void sendMessage2Endpoint(GameMessage gameMessage, List<MancalaEndpoint> mancalaEndpoints) {
         mancalaEndpoints.forEach(mancalaEndpoint -> {
-            sendChatMessage(gameMessage, mancalaEndpoint);
+            sendMessage2Endpoint(gameMessage, mancalaEndpoint);
         });
 
     }
 
-    public void sendChatMessage(GameMessage gameMessage, MancalaEndpoint mancalaEndpoint) {
+    public void sendMessage2Endpoint(GameMessage gameMessage, MancalaEndpoint mancalaEndpoint) {
         String msg = null;
         try {
             msg = mapper.writeValueAsString(gameMessage);
         } catch (JsonProcessingException e) {
             msg = e.getMessage();
-            throw new MancalaGameException(e.getMessage(), e);
+            log.error("Json format error ", e);
+            throw new MancalaGameException(msg, e);
         } finally {
             mancalaEndpoint.sendMessage(msg);
         }
