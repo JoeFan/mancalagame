@@ -2,7 +2,6 @@ package com.bol.interview.mancala.constants;
 
 public final class MancalaConstants {
 
-
     private MancalaConstants(){
 
     }
@@ -23,7 +22,7 @@ public final class MancalaConstants {
 
     public static final String GAME_RESULT_EQUAL = "Game is Over! Two players have equal number of stones";
 
-    public static final String MSG_PLAYER_IS_READY = "{0} is ready......";
+    public static final String MSG_PLAYER_IS_READY = "Player {0} is ready......";
 
     public static final String MSG_PLAYER_SOW_WITH_PIT_INDEX  = "Player {0} sow pit Idx {1}";;
 

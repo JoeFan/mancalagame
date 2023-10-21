@@ -65,9 +65,10 @@ public class MancalaEndpoint {
 
         this.player = username;
         WEB_SOCKET_MANCALA_GAMER.put(player, this);
-        GameMessage gameMessage = new GameMessage(username, MessageStatus.READY);
-        MessageSender.sendMessage2Endpoints(gameMessage, WEB_SOCKET_MANCALA_GAMER.values());
 
+        String playerIsReady = MessageFormat. format(MancalaConstants.MSG_PLAYER_IS_READY, username);
+        GameMessage gameMessage = new GameMessage(playerIsReady, MessageStatus.READY);
+        MessageSender.sendMessage2Endpoints(gameMessage, WEB_SOCKET_MANCALA_GAMER.values());
     }
 
 
@@ -132,6 +133,10 @@ public class MancalaEndpoint {
 
     private void persistGamePlayers(MancalaGame mancalaGame) {
         gameRepository.save(mancalaGame);
+        persistGameAndPlayers(mancalaGame);
+    }
+
+    private static void persistGameAndPlayers(MancalaGame mancalaGame) {
         List<MancalaEndpoint> gameEndPoints = new ArrayList<>();
         gameEndPoints.addAll(WEB_SOCKET_MANCALA_GAMER.values());
         GAME_PLAYERS_ENDPOINT.put(mancalaGame.getGameId(), gameEndPoints);
