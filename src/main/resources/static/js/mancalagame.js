@@ -112,6 +112,8 @@ var drawOpponentSegment = function(segmentData){
      $('#opponent-pit-3').html(segmentData.pits[3]);
      $('#opponent-pit-4').html(segmentData.pits[4]);
      $('#opponent-pit-5').html(segmentData.pits[5]);
+     $('#opponentPlayerName').html(segmentData.player);
+
 
 }
 
@@ -123,6 +125,7 @@ var drawSegment = function(segmentData){
     $('#pit-4').html(segmentData.pits[4]);
     $('#pit-5').html(segmentData.pits[5]);
     $('#house').html(segmentData.house);
+    $('#playerName').html(segmentData.player);
 
 }
 
