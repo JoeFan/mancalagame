@@ -18,7 +18,7 @@ public final class MancalaConstants {
 
     public static final String MSG_USER_NAME_EXIST = "User name {0} is already exist! Please rename a new one!";;
 
-    public static final String MSG_GAME_START =  "Game started! It's {0}'s turn!";
+    public static final String MSG_GAME_START =  "Game started! It''s {0}''s turn!";
 
     public static final String GAME_RESULT_EQUAL = "Game is Over! Two players have equal number of stones";
 

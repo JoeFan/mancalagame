@@ -1,6 +1,9 @@
 package com.bol.interview.mancala.model;
 
+import com.bol.interview.mancala.constants.MancalaConstants;
 import org.junit.jupiter.api.Test;
+
+import java.text.MessageFormat;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -25,5 +28,12 @@ class BoardSegmentTest {
         assertEquals(segmentSowResult.getLeftStoneCnt(), 1);
         assertEquals(boardSegment.getHouseStoneCnt(), 0);
         assertEquals(segmentSowResult.getLastSowPitIndex(), 5);
+    }
+
+
+    @Test
+    void test(){
+        String str = MessageFormat.format("Game started! It''s {0}''s turn!","test");
+        System.out.println(str);
     }
 }

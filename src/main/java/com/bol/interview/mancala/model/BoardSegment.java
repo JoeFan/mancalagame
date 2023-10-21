@@ -9,7 +9,6 @@ import java.util.stream.IntStream;
 @Data
 public class BoardSegment {
 
-
     private String id;
     private String player;
     private Pit house;
@@ -73,7 +72,7 @@ public class BoardSegment {
         segmentSowResult.setLastSowPitIndex(pitIdx);
         segmentSowResult.setSowRequestPlayer(sowedPlayer);
         segmentSowResult.setLastPitOwner(this.player);
-        segmentSowResult.setLastSowInEmptyPit(this.getStoneCntByPitIdx(pitIdx) == 1);
+        segmentSowResult.setLastSowInEmptyPit(pitIdx <6 && this.getStoneCntByPitIdx(pitIdx) == 1);
         return segmentSowResult;
     }
 
