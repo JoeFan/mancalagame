@@ -115,18 +115,14 @@ public class MancalaEndpoint {
     }
 
     private GameMessage<String> buildGameMessageWithStatus(String message, MessageStatus messageStatus) {
-        GameMessage<String> gameMessage = new GameMessage<>();
-        gameMessage.setStatus(messageStatus);
-        gameMessage.setMessage(message);
+        GameMessage<String> gameMessage = new GameMessage<>(message, messageStatus);
         return gameMessage;
     }
 
     private GameMessage<MancalaGameVO> buildGameStartMessage(MancalaGame mancalaGame) {
-        GameMessage<MancalaGameVO> gameMessage = new GameMessage<>();
+        String message = "Game started! It's " + mancalaGame.getActiveBoardSegment().getPlayer() + "'s turn!";
         MancalaGameVO mancalaGameVO = new MancalaGameVO(mancalaGame);
-        gameMessage.setData(mancalaGameVO);
-        gameMessage.setStatus(MessageStatus.START);
-        gameMessage.setMessage("Game started! It's " + mancalaGame.getActiveBoardSegment().getPlayer() + "'s turn!");
+        GameMessage<MancalaGameVO> gameMessage = new GameMessage(message, mancalaGameVO, MessageStatus.START);
         return gameMessage;
     }
 
@@ -150,10 +146,7 @@ public class MancalaEndpoint {
     }
 
     private GameMessage<MancalaGameVO> buildGameOverMessage(MancalaGameVO mancalaGameVO, String gameInfo, MessageStatus end) {
-        GameMessage<MancalaGameVO> gameMessage = new GameMessage<>();
-        gameMessage.setData(mancalaGameVO);
-        gameMessage.setMessage(gameInfo);
-        gameMessage.setStatus(end);
+        GameMessage<MancalaGameVO> gameMessage = new GameMessage<>(gameInfo, mancalaGameVO, end);
         return gameMessage;
     }
 
@@ -166,14 +159,14 @@ public class MancalaEndpoint {
     }
 
     private void sendOperationInvalidMessage(MancalaGameException e) throws JsonProcessingException {
-        GameMessage<String> gameMessage = buildGameMessageWithStatus(e.getMessage(), MessageStatus.OPERATION_ERR);
+        GameMessage<String> gameMessage = new GameMessage(e.getMessage(), MessageStatus.OPERATION_ERR);
         this.sendMessage(mapper.writeValueAsString(gameMessage));
     }
 
 
     public void sendMessage(MancalaEndpoint chessServer, String msg) {
         try {
-            chessServer.session.getBasicRemote().sendText(msg);
+            chessServer.getSession().getBasicRemote().sendText(msg);
         } catch (IOException e) {
             chessServer.onClose();
         }
@@ -222,6 +215,10 @@ public class MancalaEndpoint {
     public static boolean isPrepareAll() {
         Collection<MancalaEndpoint> values = WEB_SOCKET_CHESS_GAMER.values();
         return values.size() >= 2;
+    }
+
+    public Session getSession(){
+        return this.session;
     }
 
 
