@@ -3,7 +3,7 @@
 ### How to startup service
 * make sure you have mongo in local or use docker to setup mongo.
 * run: MancalaGameApplication
-* website in local: [http://localhost:8989/mancalagame](http://localhost:8989/mancalagame)
+* website in local: [https://localhost:8443/mancalagame](https://localhost:8443/mancalagame)
 
 ### How to play:
 * Input your username, click "Login"
