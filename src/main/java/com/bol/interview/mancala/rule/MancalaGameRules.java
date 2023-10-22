@@ -10,7 +10,7 @@ public class MancalaGameRules {
     //the order of the rules has impact on the result!
     private static final GameRule[] rules = new GameRule[]{
             new AnotherRoundRule(),
-            new MoveBothPits2PlayerHouseRule(),
+            new MoveBothPits2SowingPlayerHouseRule(),
             new SwitchTurnRule()
 
     };
