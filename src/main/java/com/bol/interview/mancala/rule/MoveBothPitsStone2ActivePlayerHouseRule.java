@@ -3,7 +3,7 @@ package com.bol.interview.mancala.rule;
 import com.bol.interview.mancala.model.MancalaGame;
 import com.bol.interview.mancala.model.SegmentSowResult;
 
-public class MoveBothPits2SowingPlayerHouseRule implements GameRule {
+public class MoveBothPitsStone2ActivePlayerHouseRule implements GameRule {
 
     @Override
     public boolean apply(MancalaGame mancalaGame, SegmentSowResult segmentSowResult) {
