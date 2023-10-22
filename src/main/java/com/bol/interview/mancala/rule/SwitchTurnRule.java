@@ -10,9 +10,7 @@ public class SwitchTurnRule implements GameRule {
     @Override
     public boolean apply(MancalaGame mancalaGame, SegmentSowResult result) {
 
-        BoardSegment temp = mancalaGame.getActiveBoardSegment();
-        mancalaGame.setActiveBoardSegment(mancalaGame.getInactiveBoardSegment());
-        mancalaGame.setInactiveBoardSegment(temp);
+        mancalaGame.switchTurn();
         return true;
     }
 }

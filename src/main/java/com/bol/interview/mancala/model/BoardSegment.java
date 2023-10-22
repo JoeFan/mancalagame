@@ -85,4 +85,8 @@ public class BoardSegment {
             house.addStones(pit.removalAllStones());
         });
     }
+
+    public void movePits2PlayerHouse(BoardSegment playerSegment, int lastSowPitIdx) {
+        playerSegment.addStones2House(this.clearStonesByPitIdx(lastSowPitIdx));
+    }
 }

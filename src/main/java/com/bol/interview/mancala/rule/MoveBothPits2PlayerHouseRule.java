@@ -13,12 +13,10 @@ public class MoveBothPits2PlayerHouseRule implements GameRule {
         BoardSegment playerSegment = mancalaGame.getActiveBoardSegment();
 
         if (segmentSowResult.isLastOwnPlayerOwnPit() && segmentSowResult.isLastSowInEmptyPit()) {
-            playerSegment.addStones2House(playerSegment.clearStonesByPitIdx(lastSowPitIdx));
+            playerSegment.movePits2PlayerHouse(playerSegment, lastSowPitIdx);
             int opponentPitIdx = MancalaConstants.LAST_PIT_INDEX - lastSowPitIdx;
-            int stoneNum = mancalaGame.getInactiveBoardSegment().clearStonesByPitIdx(opponentPitIdx);
-            playerSegment.addStones2House(stoneNum);
-            mancalaGame.setActiveBoardSegment(mancalaGame.getInactiveBoardSegment());
-            mancalaGame.setInactiveBoardSegment(playerSegment);
+            mancalaGame.getInactiveBoardSegment().movePits2PlayerHouse(playerSegment, opponentPitIdx);
+            mancalaGame.switchTurn();
             return true;
         }
         return false;

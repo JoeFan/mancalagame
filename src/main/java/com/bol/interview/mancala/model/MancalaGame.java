@@ -86,4 +86,10 @@ public class MancalaGame {
         return "";
 
     }
+
+    public void switchTurn() {
+        BoardSegment activeBoardSegment = this.activeBoardSegment;
+        this.activeBoardSegment = this.inactiveBoardSegment;
+        this.inactiveBoardSegment = activeBoardSegment;
+    }
 }

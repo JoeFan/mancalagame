@@ -15,6 +15,7 @@
 Because no expectation on Non-Functional requirements, most of the tech choice criteria is easy to set up code
 some defects:
 * mixed backed and frontend code in same service.
+* Not implement SSL related.
 
 
 ### Tech Involved:
@@ -38,6 +39,8 @@ Why use WebSocket instead of Http1.X for MancalaGameController
 | Frequently Update                             |    No     |                  Yes |              No |
 | multiple client communication in same channel |    Yes    |                   No |             Yes |
 
+Defect of websocket: not supported by some web browser.
+
 For the Game is real time support, Websocket is faster than HTTP Connection.
 
 ### Model
@@ -54,10 +57,8 @@ models in package:com.bol.interview.mancala.model
 |              | activeBoardSegment   | BoardSegment    | the current turn player owned board segment |
 |              | inactiveBoardSegment | BoardSegment    | the player not in turn owned board segment  |
 | Pit          |                      | pit and big pit | each small pit and house                    |
-| Player       |                      | the game player | the game player                             |
 | SowResult    | leftStone            | int             | left stone number after sow                 |
 |              | currentPitIdx        | int             | last sowed pit index                        |
-|              | action               | Sowaction       | the action after segment sow                |
 
 
 

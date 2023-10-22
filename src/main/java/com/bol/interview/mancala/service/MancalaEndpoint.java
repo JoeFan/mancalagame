@@ -32,13 +32,19 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MancalaEndpoint {
 
     private static final ConcurrentHashMap<String, MancalaEndpoint> WEB_SOCKET_MANCALA_GAMER = new ConcurrentHashMap<>();
-    private static final ConcurrentHashMap<String, List<MancalaEndpoint>> GAME_PLAYERS_ENDPOINT = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, List<MancalaEndpoint>> GAME_PLAYERS_ENDPOINT = new ConcurrentHashMap<>(20);
     private static final int LENGTH = 2;
     private static ObjectMapper mapper = new ObjectMapper();
     private static MancalaGameRepository gameRepository;
     private Session session;
     private String player;
     private String gameId;
+
+    @Autowired
+    public void setGameRepository(MancalaGameRepository mancalaGameRepository) {
+        gameRepository = mancalaGameRepository;
+    }
+
 
     private static void persistGameAndPlayers(MancalaGame mancalaGame) {
         List<MancalaEndpoint> gameEndPoints = new ArrayList<>();
@@ -55,10 +61,6 @@ public class MancalaEndpoint {
         }
     }
 
-    @Autowired
-    public void setGameRepository(MancalaGameRepository mancalaGameRepository) {
-        gameRepository = mancalaGameRepository;
-    }
 
     @OnOpen
     public void onOpen(Session session, @PathParam("username") String username) {
@@ -109,10 +111,8 @@ public class MancalaEndpoint {
     }
 
     private void sowPits(GameRequestMessage gameRequestMessage) {
+        initGameId(gameRequestMessage);
         try {
-            if (this.gameId == null) {
-                this.gameId = gameRequestMessage.getGameId();
-            }
             Optional<MancalaGame> optionalMancalaGame = gameRepository.findById(gameId);
             if (optionalMancalaGame.isPresent()) {
                 MancalaGame mancalaGame = optionalMancalaGame.get();
@@ -125,6 +125,12 @@ public class MancalaEndpoint {
 
         } catch (MancalaGameException e) {
             MessageSender.sendOperationErrorMessage(e.getMessage(), this);
+        }
+    }
+
+    private void initGameId(GameRequestMessage gameRequestMessage) {
+        if (this.gameId == null) {
+            this.gameId = gameRequestMessage.getGameId();
         }
     }
 
