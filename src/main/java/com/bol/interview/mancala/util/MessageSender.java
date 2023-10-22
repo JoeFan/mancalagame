@@ -48,6 +48,11 @@ public class MessageSender {
         MessageSender.sendMessage2Endpoint(value, mancalaEndpoint);
     }
 
+    public static void sendPlayerIsJoinin(String username,  MancalaEndpoint mancalaEndpoint) {
+        String playerIsReady = MessageFormat.format(MancalaConstants.MSG_PLAYER_IS_JOIN_IN, username);
+        GameMessage gameMessage = new GameMessage(playerIsReady, MessageStatus.READY);
+        MessageSender.sendMessage2Endpoint(gameMessage, mancalaEndpoint);
+    }
     public static void sendPlayerIsReadyMessage(String username, Collection<MancalaEndpoint> mancalaEndpoints) {
         String playerIsReady = MessageFormat.format(MancalaConstants.MSG_PLAYER_IS_READY, username);
         GameMessage gameMessage = new GameMessage(playerIsReady, MessageStatus.READY);

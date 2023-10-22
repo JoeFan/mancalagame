@@ -13,6 +13,8 @@ public final class MancalaConstants {
     public static final String MSG_USER_NAME_EXIST = "User name {0} is already exist! Please rename a new one!";
     public static final String MSG_GAME_START = "Game started! It''s {0}''s turn!";
     public static final String GAME_RESULT_EQUAL = "Game is Over! Two players have equal number of stones";
+    public static final String MSG_PLAYER_IS_JOIN_IN= "Player {0} is join in......";
+
     public static final String MSG_PLAYER_IS_READY = "Player {0} is ready......";
     public static final String MSG_PLAYER_SOW_WITH_PIT_INDEX = "Player {0} sow pit Idx {1}";
     public static final int MAX_GAME_SIZE = 20;
@@ -21,6 +23,7 @@ public final class MancalaConstants {
 
     public static final String BLANK_INFO = "";
     public static final String MSG_SOWING_EMPTY_PIT = "The pit you are sowing is empty! Please choose an empty one!";
+    public static final String THREAD_WAS_INTERRUPTED = "This thread was interrupted";
 
     private MancalaConstants() {
 

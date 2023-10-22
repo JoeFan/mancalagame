@@ -33,7 +33,7 @@ public class MancalaEndpoint {
 
     private static final BlockingQueue<MancalaEndpoint> WEB_SOCKET_MANCALA_GAMER = new LinkedBlockingQueue<>(MancalaConstants.MAX_WAITING_PLAYER);
 
-    private static final Set<String> PLAYER_NAMES = new HashSet<>();
+    private static final Set<String> JOINED_PLAYERS = new HashSet<>();
     private static final ConcurrentHashMap<String, List<MancalaEndpoint>> GAME_PLAYERS_ENDPOINT = new ConcurrentHashMap<>(MancalaConstants.MAX_GAME_SIZE);
     private static final ObjectMapper mapper = new ObjectMapper();
     private static MancalaGameRepository gameRepository;
@@ -54,15 +54,14 @@ public class MancalaEndpoint {
             return;
         }
 
-        if (PLAYER_NAMES.contains(username)) {
+        if (JOINED_PLAYERS.contains(username)) {
             MessageSender.sendPlayerNameExistMsg(username, this);
             return;
         }
 
         this.player = username;
-        PLAYER_NAMES.add(player);
-        WEB_SOCKET_MANCALA_GAMER.add(this);
-        MessageSender.sendPlayerIsReadyMessage(username, WEB_SOCKET_MANCALA_GAMER);
+        JOINED_PLAYERS.add(player);
+        MessageSender.sendPlayerIsJoinin(username, this);
     }
 
     @OnMessage
@@ -73,23 +72,32 @@ public class MancalaEndpoint {
 
         PlayerAction playerAction = gameRequestMessage.getPlayerAction();
         if (playerAction == PlayerAction.START) {
-            initializeGame();
+            try{
+                initializeGame();
+            }catch(InterruptedException e){
+                handleInterruptException();
+            }
         } else if (playerAction == PlayerAction.SOW) {
             sowPits(gameRequestMessage);
         }
     }
 
-    private void initializeGame() {
-        if (isPrepareAll()) {
-            synchronized (WEB_SOCKET_MANCALA_GAMER) {
-                List<MancalaEndpoint> gameEndPoints = new ArrayList<>(MancalaConstants.GAME_PLAYER_NUMBER);
-                gameEndPoints.add(WEB_SOCKET_MANCALA_GAMER.poll());
-                gameEndPoints.add(WEB_SOCKET_MANCALA_GAMER.poll());
+    private static void handleInterruptException() {
+        Thread.currentThread().interrupt();
+        if (Thread.interrupted()) {
+            throw new MancalaGameException(MancalaConstants.THREAD_WAS_INTERRUPTED);
+        }
+    }
 
-                MancalaGame mancalaGame = createAndPersistGame(gameEndPoints);
-                MessageSender.sendGameStartMessage(mancalaGame, gameEndPoints);
-            }
+    private void initializeGame() throws InterruptedException {
+        if (isPrepareAll()) {
+            List<MancalaEndpoint> gameEndPoints = new ArrayList<>(MancalaConstants.GAME_PLAYER_NUMBER);
+            gameEndPoints.add(this);
+            gameEndPoints.add(WEB_SOCKET_MANCALA_GAMER.take());
+            MancalaGame mancalaGame = createAndPersistGame(gameEndPoints);
+            MessageSender.sendGameStartMessage(mancalaGame, gameEndPoints);
         } else {
+            WEB_SOCKET_MANCALA_GAMER.put(this);
             MessageSender.sendPlayerIsReadyMessage(player, WEB_SOCKET_MANCALA_GAMER);
         }
 
@@ -124,7 +132,6 @@ public class MancalaEndpoint {
             MancalaGameVO mancalaGameVO = new MancalaGameVO(mancalaGame);
             persistGame(mancalaGame, mancalaGameVO);
             MessageSender.sendSowedResultMessage(gameRequestMessage, mancalaGameVO, GAME_PLAYERS_ENDPOINT.get(gameId));
-
         }
     }
 
@@ -144,11 +151,11 @@ public class MancalaEndpoint {
 
     @OnClose
     public void onClose() {
-        if (Optional.of(gameId).isPresent()) {
+        if (Optional.ofNullable(gameId).isPresent()) {
             GAME_PLAYERS_ENDPOINT.remove(this.gameId);
         }
-        if (Optional.of(player).isPresent()) {
-            PLAYER_NAMES.remove(this.player);
+        if (Optional.ofNullable(player).isPresent()) {
+            JOINED_PLAYERS.remove(this.player);
         }
         if (this.session.isOpen()) {
             try {
@@ -161,8 +168,8 @@ public class MancalaEndpoint {
     }
 
 
-    public boolean isPrepareAll() {
-        return WEB_SOCKET_MANCALA_GAMER.size() >= 2;
+    private boolean isPrepareAll() {
+        return WEB_SOCKET_MANCALA_GAMER.size() >= 1;
     }
 
     public Session getSession() {

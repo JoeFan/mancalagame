@@ -6,6 +6,8 @@ import com.bol.interview.mancala.request.SowRequest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MancalaGameTest {
@@ -225,4 +227,6 @@ class MancalaGameTest {
         mancalaGame.getActiveBoardSegment().addStones2House(2);
         assertEquals("PlayerA", mancalaGame.getSuccessInfo());
     }
+
+
 }

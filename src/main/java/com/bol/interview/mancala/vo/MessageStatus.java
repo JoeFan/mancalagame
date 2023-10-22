@@ -7,6 +7,7 @@ public enum MessageStatus {
     START,
     SOW,
     END,
-    READY
+    READY,
+    JOIN
 
 }
