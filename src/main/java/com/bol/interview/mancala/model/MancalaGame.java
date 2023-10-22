@@ -45,14 +45,14 @@ public class MancalaGame {
         BoardSegment currentBoardSegment = activeBoardSegment;
         BoardSegment nextBoardSegment = inactiveBoardSegment;
         SegmentSowResult segmentSowResult = null;
-        int sowPitIdx = sowRequest.getPitIdx() + 1;
+        int startSowPitIdx = sowRequest.getPitIdx() + 1;
         while (stoneCnt != 0) {
-            segmentSowResult = currentBoardSegment.sow(sowPitIdx, sowRequest.getPlayer(), stoneCnt);
+            segmentSowResult = currentBoardSegment.sow(startSowPitIdx, sowRequest.getPlayer(), stoneCnt);
             stoneCnt = segmentSowResult.getLeftStoneCnt();
             BoardSegment temp = currentBoardSegment;
             currentBoardSegment = nextBoardSegment;
             nextBoardSegment = temp;
-            sowPitIdx = 0;
+            startSowPitIdx = 0;
         }
 
         return segmentSowResult;
@@ -91,5 +91,11 @@ public class MancalaGame {
         BoardSegment activeBoardSegment = this.activeBoardSegment;
         this.activeBoardSegment = this.inactiveBoardSegment;
         this.inactiveBoardSegment = activeBoardSegment;
+    }
+
+    public void moveStones2SowingPlayerHouse(int lastSowPitIdx) {
+        activeBoardSegment.movePits2PlayerHouse(activeBoardSegment,lastSowPitIdx);
+        int opponentPitIdx = MancalaConstants.LAST_PIT_INDEX - lastSowPitIdx;
+        inactiveBoardSegment.movePits2PlayerHouse(activeBoardSegment, opponentPitIdx);
     }
 }

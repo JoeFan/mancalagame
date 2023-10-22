@@ -72,7 +72,7 @@ public class BoardSegment {
         segmentSowResult.setLastSowPitIndex(pitIdx);
         segmentSowResult.setSowRequestPlayer(sowedPlayer);
         segmentSowResult.setLastPitOwner(this.player);
-        segmentSowResult.setLastSowInEmptyPit(pitIdx < 6 && this.getStoneCntByPitIdx(pitIdx) == 1);
+        segmentSowResult.setLastSowInEmptyPit(pitIdx < MancalaConstants.PITS_NUM && this.getStoneCntByPitIdx(pitIdx) == 1);
         return segmentSowResult;
     }
 

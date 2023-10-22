@@ -30,10 +30,4 @@ class BoardSegmentTest {
         assertEquals(segmentSowResult.getLastSowPitIndex(), 5);
     }
 
-
-    @Test
-    void test(){
-        String str = MessageFormat.format("Game started! It''s {0}''s turn!","test");
-        System.out.println(str);
-    }
 }

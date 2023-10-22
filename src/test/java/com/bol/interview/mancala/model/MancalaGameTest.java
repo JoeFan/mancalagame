@@ -146,7 +146,6 @@ class MancalaGameTest {
     void sow_whenSowStonePassOppHouse_expectOpponentHouseNotSowed() {
 
         MancalaGame mancalaGame = new MancalaGame("PlayerA", "PlayerB");
-        BoardSegment preInActiveSegment = mancalaGame.getInactiveBoardSegment();
         BoardSegment preActiveBoardSegment = mancalaGame.getActiveBoardSegment();
         SowRequest sowRequest = new SowRequest("PlayerA",MancalaConstants.LAST_PIT_INDEX);
         preActiveBoardSegment.addStones2Pit(MancalaConstants.LAST_PIT_INDEX, 3);
