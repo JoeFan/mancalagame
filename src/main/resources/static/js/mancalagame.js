@@ -1,5 +1,5 @@
 var websocket = null;
-var url = "ws://localhost:8989/mancala";
+var url = "wss://localhost:8443/mancala";
 var gameId;
 
 

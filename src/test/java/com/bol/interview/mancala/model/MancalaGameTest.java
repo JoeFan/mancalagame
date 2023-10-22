@@ -38,6 +38,19 @@ class MancalaGameTest {
         assertEquals(MancalaConstants.MSG_NOT_PALYER_TURN, mancalaGameException.getMessage());
     }
 
+
+
+    @Test
+    void sow_whenSowingEmptyPit_expectExceptionWithEmptyMsg() {
+
+        SowRequest sowRequest = new SowRequest("PlayerA", 1);
+        MancalaGame mancalaGame = new MancalaGame("PlayerA", "PlayerB");
+        mancalaGame.getActiveBoardSegment().clearStonesByPitIdx(1);
+        MancalaGameException mancalaGameException = Assertions.assertThrows(MancalaGameException.class,
+                ()->mancalaGame.sow(sowRequest));
+        assertEquals(MancalaConstants.MSG_SOWING_EMPTY_PIT, mancalaGameException.getMessage());
+    }
+
     @Test
     void sow_whenPlayerSowOwnEmptyPit_expectMoveBothSidePitStone2PlayerHouse() {
 
@@ -155,4 +168,61 @@ class MancalaGameTest {
         assertEquals(0, mancalaGame.getActiveBoardSegment().getHouseStoneCnt());
     }
 
+    @Test
+    void sow_whenSowSecondPit_expectLastSowedOpponentFirstPit() {
+
+        MancalaGame mancalaGame = new MancalaGame("PlayerA", "PlayerB");
+        BoardSegment preActiveBoardSegment = mancalaGame.getActiveBoardSegment();
+        int pitIdx = 1;
+        SowRequest sowRequest = new SowRequest("PlayerA",pitIdx);
+        BoardSegment inactiveBoardSegment = mancalaGame.getInactiveBoardSegment();
+        int preStoneCnt = inactiveBoardSegment.getStoneCntByPitIdx(0);
+        mancalaGame.sow(sowRequest);
+
+        assertEquals(1, preActiveBoardSegment.getHouseStoneCnt());
+        assertEquals(0, mancalaGame.getActiveBoardSegment().getHouseStoneCnt());
+        assertEquals(preStoneCnt+1, inactiveBoardSegment.getStoneCntByPitIdx(0));
+    }
+
+
+    @Test
+    void moveStones2SowingPlayerHouse_whenmoving_activePlayerHouseStoneCntIncrease(){
+        MancalaGame mancalaGame = new MancalaGame("PlayerA", "PlayerB");
+        mancalaGame.moveStones2SowingPlayerHouse(5);
+        assertEquals(12, mancalaGame.getActiveBoardSegment().getHouseStoneCnt());
+    }
+
+    @Test
+    void switchTurn_whenswitched_expectBoardswitched(){
+        MancalaGame mancalaGame = new MancalaGame("PlayerA", "PlayerB");
+        BoardSegment activeSegment = mancalaGame.getActiveBoardSegment();
+        BoardSegment inactiveSegment = mancalaGame.getInactiveBoardSegment();
+        mancalaGame.switchTurn();
+        assertEquals(activeSegment, mancalaGame.getInactiveBoardSegment());
+        assertEquals(inactiveSegment, mancalaGame.getActiveBoardSegment());
+
+    }
+
+    @Test
+    void getSuccessInfo_whenGameIsNotOver_expectEmptyResult(){
+        MancalaGame mancalaGame = new MancalaGame("PlayerA", "PlayerB");
+        assertEquals(MancalaConstants.BLANK_INFO, mancalaGame.getSuccessInfo());
+    }
+
+    @Test
+    void getSuccessInfo_whenEqualResult_expectGameResultEqual(){
+        MancalaGame mancalaGame = new MancalaGame("PlayerA", "PlayerB");
+        mancalaGame.getInactiveBoardSegment().moveAllPits2House();
+        mancalaGame.getActiveBoardSegment().moveAllPits2House();
+        assertEquals(MancalaConstants.GAME_RESULT_EQUAL, mancalaGame.getSuccessInfo());
+    }
+
+    @Test
+    void getSuccessInfo_whenOnePlayerWin_expectWinnerPlayerInfo(){
+        MancalaGame mancalaGame = new MancalaGame("PlayerA", "PlayerB");
+        mancalaGame.getInactiveBoardSegment().moveAllPits2House();
+        mancalaGame.getActiveBoardSegment().moveAllPits2House();
+        mancalaGame.getActiveBoardSegment().addStones2House(2);
+        assertEquals("PlayerA", mancalaGame.getSuccessInfo());
+    }
 }

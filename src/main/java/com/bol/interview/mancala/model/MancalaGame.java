@@ -41,6 +41,7 @@ public class MancalaGame {
 
     }
 
+
     private SegmentSowResult sow(SowRequest sowRequest, int stoneCnt) {
         BoardSegment currentBoardSegment = activeBoardSegment;
         BoardSegment nextBoardSegment = inactiveBoardSegment;
@@ -59,12 +60,17 @@ public class MancalaGame {
     }
 
     private void checkSowRequest(SowRequest sowRequest) {
-        if (sowRequest.getPitIdx() < 0 || sowRequest.getPitIdx() > 5) {
+        int sowingPitIdx = sowRequest.getPitIdx();
+        if (sowingPitIdx < 0 || sowingPitIdx > 5) {
             throw new MancalaGameException(MancalaConstants.PIT_INDEX_INVALID);
         }
 
         if (!sowRequest.getPlayer().equals(activeBoardSegment.getPlayer())) {
             throw new MancalaGameException(MancalaConstants.MSG_NOT_PALYER_TURN);
+        }
+
+        if(activeBoardSegment.getStoneCntByPitIdx(sowingPitIdx) == 0){
+            throw new MancalaGameException(MancalaConstants.MSG_SOWING_EMPTY_PIT);
         }
     }
 
@@ -83,7 +89,7 @@ public class MancalaGame {
             return houseStoneCnt > inactiveBoardSegmentHouseStoneCnt ?
                     activeBoardSegment.getPlayer() : inactiveBoardSegment.getPlayer();
         }
-        return "";
+        return MancalaConstants.BLANK_INFO;
 
     }
 

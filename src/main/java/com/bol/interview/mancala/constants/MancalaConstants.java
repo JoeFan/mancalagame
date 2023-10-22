@@ -19,6 +19,9 @@ public final class MancalaConstants {
     public static final int MAX_WAITING_PLAYER = 10;
     public static final int GAME_PLAYER_NUMBER = 2;
 
+    public static final String BLANK_INFO = "";
+    public static final String MSG_SOWING_EMPTY_PIT = "The pit you are sowing is empty! Please choose an empty one!";
+
     private MancalaConstants() {
 
     }
