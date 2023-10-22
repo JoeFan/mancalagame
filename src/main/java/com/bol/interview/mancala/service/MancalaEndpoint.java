@@ -35,7 +35,6 @@ public class MancalaEndpoint {
 
     private static final Set<String> PLAYER_NAMES = new HashSet<>();
     private static final ConcurrentHashMap<String, List<MancalaEndpoint>> GAME_PLAYERS_ENDPOINT = new ConcurrentHashMap<>(MancalaConstants.MAX_GAME_SIZE);
-    private static final int LENGTH = 2;
     private static final ObjectMapper mapper = new ObjectMapper();
     private static MancalaGameRepository gameRepository;
     private Session session;
@@ -50,7 +49,7 @@ public class MancalaEndpoint {
     @OnOpen
     public void onOpen(Session session, @PathParam("username") String username) {
         this.session = session;
-        if (WEB_SOCKET_MANCALA_GAMER.size() == LENGTH) {
+        if (WEB_SOCKET_MANCALA_GAMER.size() == MancalaConstants.MAX_WAITING_PLAYER) {
             MessageSender.sendRoomIsFullMessage(this);
             return;
         }

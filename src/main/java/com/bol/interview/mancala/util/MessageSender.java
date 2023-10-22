@@ -38,13 +38,13 @@ public class MessageSender {
 
 
     public static void sendRoomIsFullMessage(MancalaEndpoint mancalaEndpoint) {
-        GameMessage value = new GameMessage(MancalaConstants.MSG_ROOM_IS_FULL, MessageStatus.OPERATION_ERR);
+        GameMessage value = new GameMessage(MancalaConstants.MSG_ROOM_IS_FULL, MessageStatus.LOGIN_INVALID);
         MessageSender.sendMessage2Endpoint(value, mancalaEndpoint);
     }
 
     public static void sendPlayerNameExistMsg(String username, MancalaEndpoint mancalaEndpoint) {
         String msg = MessageFormat.format(MancalaConstants.MSG_USER_NAME_EXIST, username);
-        GameMessage value = new GameMessage(msg, MessageStatus.OPERATION_ERR);
+        GameMessage value = new GameMessage(msg, MessageStatus.LOGIN_INVALID);
         MessageSender.sendMessage2Endpoint(value, mancalaEndpoint);
     }
 

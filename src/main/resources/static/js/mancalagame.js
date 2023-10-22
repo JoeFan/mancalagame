@@ -14,7 +14,6 @@ $('#login').click(function(){
     websocket = new WebSocket(url + "/" +username);
     websocket.onopen = function(event){
         $('#show').append("<p>System Message：Connect Success!</p>");
-
         $('#startGame').removeAttr('disabled');
         $('#login').attr("disabled","disabled");
         $('#username').attr("disabled","disabled");
@@ -24,7 +23,7 @@ $('#login').click(function(){
         let message = null;
         let rs = JSON.parse(event.data);
         if(rs.status =="START"){
-                $('#sendMessage').removeAttr("disabled");
+
                 $('#startGame').attr("disabled","disabled");
                 gameId = rs.data.gameId;
                 drawBoard(rs);
@@ -39,6 +38,11 @@ $('#login').click(function(){
         }else if(rs.status == "SOW"){
                 drawBoard(rs);
                 message =  "<p>System Message：" + rs.message + "</p>";
+        }else if(rs.status == "LOGIN_INVALID"){
+                $('#startGame').attr("disabled","disabled");
+                $('#login').removeAttr("disabled");
+                $('#username').removeAttr("disabled");
+            message = "<p>System Message：" + rs.message + "</p>";
         }else{
                 message = "<p>System Message：" + rs.message + "</p>";
         }
@@ -52,15 +56,6 @@ $('#login').click(function(){
     }
 });
 
-
-
-//$('#sendMessage').click(function(){
-//    var message = $('#message').val();
-//    $('#message').val('');
-//    var username = $('#username').val();
-//
-//    websocket.send(jsonMessage("CHAT",username,pitIdx,gameId));
-//});
 
 
 $('#startGame').click(function(){
