@@ -17,6 +17,7 @@ public final class MancalaConstants {
     public static final String MSG_PLAYER_SOW_WITH_PIT_INDEX = "Player {0} sow pit Idx {1}";
     public static final int MAX_GAME_SIZE = 20;
     public static final int MAX_WAITING_PLAYER = 10;
+    public static final int GAME_PLAYER_NUMBER = 2;
 
     private MancalaConstants() {
 

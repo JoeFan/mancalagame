@@ -47,7 +47,6 @@ public class MancalaEndpoint {
         gameRepository = mancalaGameRepository;
     }
 
-
     @OnOpen
     public void onOpen(Session session, @PathParam("username") String username) {
         this.session = session;
@@ -82,10 +81,9 @@ public class MancalaEndpoint {
     }
 
     private void initializeGame() {
-
         if (isPrepareAll()) {
             synchronized (WEB_SOCKET_MANCALA_GAMER) {
-                List<MancalaEndpoint> gameEndPoints = new ArrayList<>(2);
+                List<MancalaEndpoint> gameEndPoints = new ArrayList<>(MancalaConstants.GAME_PLAYER_NUMBER);
                 gameEndPoints.add(WEB_SOCKET_MANCALA_GAMER.poll());
                 gameEndPoints.add(WEB_SOCKET_MANCALA_GAMER.poll());
 
@@ -113,22 +111,29 @@ public class MancalaEndpoint {
     private void sowPits(GameRequestMessage gameRequestMessage) {
         initGameId(gameRequestMessage);
         try {
-            Optional<MancalaGame> optionalMancalaGame = gameRepository.findById(gameId);
-            if (optionalMancalaGame.isPresent()) {
-                MancalaGame mancalaGame = optionalMancalaGame.get();
-                mancalaGame.sow(new SowRequest(player, gameRequestMessage.getPitIdx()));
-                MancalaGameVO mancalaGameVO = new MancalaGameVO(mancalaGame);
-                if (mancalaGameVO.isGameOver()) {
-                    gameRepository.deleteById(mancalaGameVO.getGameId());
-                } else {
-                    gameRepository.save(mancalaGame);
-                }
-                MessageSender.sendSowedResultMessage(gameRequestMessage, mancalaGameVO, GAME_PLAYERS_ENDPOINT.get(gameId));
-
-            }
-
+            sowGamePit(gameRequestMessage);
         } catch (MancalaGameException e) {
             MessageSender.sendOperationErrorMessage(e.getMessage(), this);
+        }
+    }
+
+    private void sowGamePit(GameRequestMessage gameRequestMessage) {
+        Optional<MancalaGame> optionalMancalaGame = gameRepository.findById(gameId);
+        if (optionalMancalaGame.isPresent()) {
+            MancalaGame mancalaGame = optionalMancalaGame.get();
+            mancalaGame.sow(new SowRequest(player, gameRequestMessage.getPitIdx()));
+            MancalaGameVO mancalaGameVO = new MancalaGameVO(mancalaGame);
+            persistGame(mancalaGame, mancalaGameVO);
+            MessageSender.sendSowedResultMessage(gameRequestMessage, mancalaGameVO, GAME_PLAYERS_ENDPOINT.get(gameId));
+
+        }
+    }
+
+    private static void persistGame(MancalaGame mancalaGame, MancalaGameVO mancalaGameVO) {
+        if (mancalaGameVO.isGameOver()) {
+            gameRepository.deleteById(mancalaGameVO.getGameId());
+        } else {
+            gameRepository.save(mancalaGame);
         }
     }
 
