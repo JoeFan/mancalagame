@@ -1,6 +1,5 @@
 package com.bol.interview.mancala.rule;
 
-import com.bol.interview.mancala.model.BoardSegment;
 import com.bol.interview.mancala.model.MancalaGame;
 import com.bol.interview.mancala.model.SegmentSowResult;
 

@@ -17,7 +17,7 @@ import java.util.Collection;
 @Slf4j
 public class MessageSender {
 
-    private static ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper mapper = new ObjectMapper();
 
 
     public static void sendMessage2Endpoints(GameMessage gameMessage, Collection<MancalaEndpoint> mancalaEndpoints) {

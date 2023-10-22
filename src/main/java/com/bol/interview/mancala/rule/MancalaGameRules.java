@@ -8,7 +8,7 @@ import java.util.Arrays;
 public class MancalaGameRules {
 
     //the order of the rules has impact on the result!
-    private static GameRule[] rules = new GameRule[]{
+    private static final GameRule[] rules = new GameRule[]{
             new AnotherRoundRule(),
             new MoveBothPits2PlayerHouseRule(),
             new SwitchTurnRule()

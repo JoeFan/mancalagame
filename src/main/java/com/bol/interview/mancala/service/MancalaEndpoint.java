@@ -1,5 +1,6 @@
 package com.bol.interview.mancala.service;
 
+import com.bol.interview.mancala.constants.MancalaConstants;
 import com.bol.interview.mancala.exception.MancalaGameException;
 import com.bol.interview.mancala.model.MancalaGame;
 import com.bol.interview.mancala.repository.MancalaGameRepository;
@@ -20,21 +21,22 @@ import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingQueue;
 
 @Component
 @ServerEndpoint(value = "/mancala/{username}")
 @Slf4j
 public class MancalaEndpoint {
 
-    private static final ConcurrentHashMap<String, MancalaEndpoint> WEB_SOCKET_MANCALA_GAMER = new ConcurrentHashMap<>();
-    private static final ConcurrentHashMap<String, List<MancalaEndpoint>> GAME_PLAYERS_ENDPOINT = new ConcurrentHashMap<>(20);
+    private static final BlockingQueue<MancalaEndpoint> WEB_SOCKET_MANCALA_GAMER = new LinkedBlockingQueue<>(MancalaConstants.MAX_WAITING_PLAYER);
+
+    private static final Set<String> PLAYER_NAMES = new HashSet<>();
+    private static final ConcurrentHashMap<String, List<MancalaEndpoint>> GAME_PLAYERS_ENDPOINT = new ConcurrentHashMap<>(MancalaConstants.MAX_GAME_SIZE);
     private static final int LENGTH = 2;
-    private static ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper mapper = new ObjectMapper();
     private static MancalaGameRepository gameRepository;
     private Session session;
     private String player;
@@ -46,22 +48,6 @@ public class MancalaEndpoint {
     }
 
 
-    private static void persistGameAndPlayers(MancalaGame mancalaGame) {
-        List<MancalaEndpoint> gameEndPoints = new ArrayList<>();
-        gameEndPoints.addAll(WEB_SOCKET_MANCALA_GAMER.values());
-        GAME_PLAYERS_ENDPOINT.put(mancalaGame.getGameId(), gameEndPoints);
-        WEB_SOCKET_MANCALA_GAMER.clear();
-    }
-
-    private static void maintainGamePersistence(MancalaGame mancalaGame, MancalaGameVO mancalaGameVO) {
-        if (mancalaGameVO.isGameOver()) {
-            gameRepository.deleteById(mancalaGameVO.getGameId());
-        } else {
-            gameRepository.save(mancalaGame);
-        }
-    }
-
-
     @OnOpen
     public void onOpen(Session session, @PathParam("username") String username) {
         this.session = session;
@@ -70,14 +56,15 @@ public class MancalaEndpoint {
             return;
         }
 
-        if (WEB_SOCKET_MANCALA_GAMER.containsKey(username)) {
+        if (PLAYER_NAMES.contains(username)) {
             MessageSender.sendPlayerNameExistMsg(username, this);
             return;
         }
 
         this.player = username;
-        WEB_SOCKET_MANCALA_GAMER.put(player, this);
-        MessageSender.sendPlayerIsReadyMessage(username, WEB_SOCKET_MANCALA_GAMER.values());
+        PLAYER_NAMES.add(player);
+        WEB_SOCKET_MANCALA_GAMER.add(this);
+        MessageSender.sendPlayerIsReadyMessage(username, WEB_SOCKET_MANCALA_GAMER);
     }
 
     @OnMessage
@@ -98,16 +85,29 @@ public class MancalaEndpoint {
 
         if (isPrepareAll()) {
             synchronized (WEB_SOCKET_MANCALA_GAMER) {
-                Object[] players = WEB_SOCKET_MANCALA_GAMER.keySet().toArray();
-                MancalaGame mancalaGame = new MancalaGame(players[0].toString(), players[1].toString());
-                this.gameId = mancalaGame.getGameId();
-                persistGamePlayers(mancalaGame);
-                MessageSender.sendGameStartMessage(mancalaGame, GAME_PLAYERS_ENDPOINT.get(gameId));
+                List<MancalaEndpoint> gameEndPoints = new ArrayList<>(2);
+                gameEndPoints.add(WEB_SOCKET_MANCALA_GAMER.poll());
+                gameEndPoints.add(WEB_SOCKET_MANCALA_GAMER.poll());
+
+                MancalaGame mancalaGame = createAndPersistGame(gameEndPoints);
+                MessageSender.sendGameStartMessage(mancalaGame, gameEndPoints);
             }
         } else {
-            MessageSender.sendPlayerIsReadyMessage(player, WEB_SOCKET_MANCALA_GAMER.values());
+            MessageSender.sendPlayerIsReadyMessage(player, WEB_SOCKET_MANCALA_GAMER);
         }
 
+    }
+
+    private MancalaGame createAndPersistGame(List<MancalaEndpoint> gameEndPoints) {
+        MancalaGame mancalaGame = new MancalaGame(gameEndPoints.get(0).getPlayer(), gameEndPoints.get(1).getPlayer());
+        this.gameId = mancalaGame.getGameId();
+        GAME_PLAYERS_ENDPOINT.put(gameId, gameEndPoints);
+        gameRepository.save(mancalaGame);
+        return mancalaGame;
+    }
+
+    private String getPlayer() {
+        return player;
     }
 
     private void sowPits(GameRequestMessage gameRequestMessage) {
@@ -118,7 +118,11 @@ public class MancalaEndpoint {
                 MancalaGame mancalaGame = optionalMancalaGame.get();
                 mancalaGame.sow(new SowRequest(player, gameRequestMessage.getPitIdx()));
                 MancalaGameVO mancalaGameVO = new MancalaGameVO(mancalaGame);
-                maintainGamePersistence(mancalaGame, mancalaGameVO);
+                if (mancalaGameVO.isGameOver()) {
+                    gameRepository.deleteById(mancalaGameVO.getGameId());
+                } else {
+                    gameRepository.save(mancalaGame);
+                }
                 MessageSender.sendSowedResultMessage(gameRequestMessage, mancalaGameVO, GAME_PLAYERS_ENDPOINT.get(gameId));
 
             }
@@ -129,19 +133,19 @@ public class MancalaEndpoint {
     }
 
     private void initGameId(GameRequestMessage gameRequestMessage) {
-        if (this.gameId == null) {
+        if (!Optional.ofNullable(gameId).isPresent()) {
             this.gameId = gameRequestMessage.getGameId();
         }
     }
 
-    private void persistGamePlayers(MancalaGame mancalaGame) {
-        gameRepository.save(mancalaGame);
-        persistGameAndPlayers(mancalaGame);
-    }
-
     @OnClose
     public void onClose() {
-        GAME_PLAYERS_ENDPOINT.remove(this.gameId);
+        if (Optional.of(gameId).isPresent()) {
+            GAME_PLAYERS_ENDPOINT.remove(this.gameId);
+        }
+        if (Optional.of(player).isPresent()) {
+            PLAYER_NAMES.remove(this.player);
+        }
         if (this.session.isOpen()) {
             try {
                 this.session.close();
@@ -154,8 +158,7 @@ public class MancalaEndpoint {
 
 
     public boolean isPrepareAll() {
-        Collection<MancalaEndpoint> values = WEB_SOCKET_MANCALA_GAMER.values();
-        return values.size() == 2;
+        return WEB_SOCKET_MANCALA_GAMER.size() >= 2;
     }
 
     public Session getSession() {

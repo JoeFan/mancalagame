@@ -9,10 +9,7 @@ public class AnotherRoundRule implements GameRule {
     @Override
     public boolean apply(MancalaGame mancalaGame, SegmentSowResult result) {
         int lastSowPitIdx = result.getLastSowPitIndex();
-        if (lastSowPitIdx == MancalaConstants.HOUSE_INDEX) {
-            return true;
-        }
-        return false;
+        return lastSowPitIdx == MancalaConstants.HOUSE_INDEX;
     }
 
 }
