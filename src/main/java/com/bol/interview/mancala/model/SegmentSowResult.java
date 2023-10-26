@@ -11,7 +11,7 @@ public class SegmentSowResult {
 
     private boolean lastSowInEmptyPit;
 
-    public boolean isLastOwnPlayerOwnPit() {
+    public boolean isLastPitOwnedBySowingPlayer() {
         return sowRequestPlayer.equals(lastPitOwner);
     }
 

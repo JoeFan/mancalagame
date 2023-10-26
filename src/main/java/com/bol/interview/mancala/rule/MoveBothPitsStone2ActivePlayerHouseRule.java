@@ -9,7 +9,7 @@ public class MoveBothPitsStone2ActivePlayerHouseRule implements GameRule {
     public boolean apply(MancalaGame mancalaGame, SegmentSowResult segmentSowResult) {
         int lastSowPitIdx = segmentSowResult.getLastSowPitIndex();
 
-        if (segmentSowResult.isLastOwnPlayerOwnPit() && segmentSowResult.isLastSowInEmptyPit()) {
+        if (segmentSowResult.isLastPitOwnedBySowingPlayer() && segmentSowResult.isLastSowInEmptyPit()) {
             mancalaGame.moveStones2SowingPlayerHouse(lastSowPitIdx);
             mancalaGame.switchTurn();
             return true;
